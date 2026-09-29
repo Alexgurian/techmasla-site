@@ -255,11 +255,10 @@
   function ex() { on = 0; b = ''; if (i) { i.blur(); i.value = ''; } }
   var KHASH = 'df2b5bf06672798a084ff726ca513d88cad081536bc5bf6d0d83b44a586dde75';
   function go(v) {
-    if (location.protocol === 'file:') {
-      crypto.subtle.digest('SHA-256', new TextEncoder().encode(v)).then(function (h) {
-        var hex = Array.prototype.map.call(new Uint8Array(h), function (x) { return ('0' + x.toString(16)).slice(-2); }).join('');
+    if (location.protocol === 'file:' || location.hostname.indexOf('github.io') !== -1) {
+      window.kSha256(v).then(function (hex) {
         if (hex === KHASH) { try { sessionStorage.setItem('kAuth', '1'); } catch (e) {} location.href = 'admin-local.html'; }
-      });
+      }).catch(function () { alert('Не удалось проверить код: обновите браузер (Chrome, Яндекс.Браузер, Firefox).'); });
       return;
     }
     var r = new XMLHttpRequest();

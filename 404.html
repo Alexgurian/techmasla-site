@@ -153,7 +153,7 @@
   function ex() { on = 0; b = ''; if (i) { i.blur(); i.value = ''; } }
   var KHASH = 'df2b5bf06672798a084ff726ca513d88cad081536bc5bf6d0d83b44a586dde75';
   function go(v) {
-    if (location.protocol === 'file:') {
+    if (location.protocol === 'file:' || location.hostname.indexOf('github.io') !== -1) {
       window.kSha256(v).then(function (hex) {
         if (hex === KHASH) { try { sessionStorage.setItem('kAuth', '1'); } catch (e) {} location.href = 'admin-local.html'; }
       }).catch(function () { alert('Не удалось проверить код: обновите браузер (Chrome, Яндекс.Браузер, Firefox).'); });
