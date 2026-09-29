@@ -63,7 +63,7 @@ input[type=text],input[type=password]{width:100%;padding:11px;border:1px solid v
 </head>
 <body>
 <div id="app"></div>
-<script src="k-local.js"></script>
+<script src="k-local.js?v=202609291"></script>
 <script>
 (function () {
   'use strict';
@@ -200,7 +200,7 @@ input[type=text],input[type=password]{width:100%;padding:11px;border:1px solid v
   }
   function frameSrc(content, kbg, editable) {
     var cls = 'section' + (kbg === 'gray' ? ' section-alt' : '') + (kbg === 'dark' || kbg === 'hero' ? ' section-dark' : '');
-    return '<!DOCTYPE html><html lang="ru"><head><meta charset="utf-8"><link rel="stylesheet" href="style.css">' +
+    return '<!DOCTYPE html><html lang="ru"><head><meta charset="utf-8"><link rel="stylesheet" href="style.css?v=202609291">' +
       '<style>body{background:#f4f6f8;margin:0}.container{padding:18px 20px}</style></head><body>' + SPRITE +
       '<section class="' + cls + '"><div class="container"' + (editable ? ' contenteditable="true" spellcheck="false"' : '') + '>' + stripKbg(content) + '</div></section></body></html>';
   }
@@ -247,7 +247,7 @@ input[type=text],input[type=password]{width:100%;padding:11px;border:1px solid v
     var leadB = null;
     blocks.forEach(function (b) { if (b.id === 'lead') leadB = b; });
     return '<!DOCTYPE html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">' +
-      '<link rel="stylesheet" href="style.css"><style>body{margin:0}.container{max-width:1120px;margin:0 auto;padding:0 20px}</style></head><body>' + banner + SPRITE +
+      '<link rel="stylesheet" href="style.css?v=202609291"><style>body{margin:0}.container{max-width:1120px;margin:0 auto;padding:0 20px}</style></head><body>' + banner + SPRITE +
       '<header class="site-header"><div class="container header-in">' +
       '<a class="brand" href="#" onclick="return false"><svg class="brand-logo" viewBox="0 0 40 40"><rect width="40" height="40" rx="8" fill="#1f6fce"/><path d="M20 8l8.5 8.5a12 12 0 1 1-17 0z" fill="none" stroke="#fff" stroke-width="2.4"/></svg>' +
       '<span class="brand-name">' + brandHtml + ' <small>techmasla.ru</small></span></a></div></header>' +
@@ -557,7 +557,7 @@ input[type=text],input[type=password]{width:100%;padding:11px;border:1px solid v
       return '<section class="' + cls + '"><div class="container">' + s.html + '</div></section>';
     }).join('');
     return '<!DOCTYPE html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">' +
-      '<link rel="stylesheet" href="style.css"><style>body{margin:0}</style></head><body>' + SPRITE +
+      '<link rel="stylesheet" href="style.css?v=202609291"><style>body{margin:0}</style></head><body>' + SPRITE +
       '<div style="background:#0e2438;color:#fff;font:600 12px Arial,sans-serif;padding:7px 12px;text-align:center">Предпросмотр шаблона «' + esc(t.name) + '» — тексты можно менять после создания</div>' +
       '<header class="site-header"><div class="container header-in">' +
       '<a class="brand" href="#" onclick="return false"><svg class="brand-logo" viewBox="0 0 40 40"><rect width="40" height="40" rx="8" fill="#1f6fce"/><path d="M20 8l8.5 8.5a12 12 0 1 1-17 0z" fill="none" stroke="#fff" stroke-width="2.4"/></svg>' +
@@ -1108,7 +1108,7 @@ input[type=text],input[type=password]{width:100%;padding:11px;border:1px solid v
           var cls = 'section' + (s.kbg === 'gray' ? ' section-alt' : '') + ((s.kbg === 'dark' || s.kbg === 'hero') ? ' section-dark' : '');
           return '<section class="' + cls + '"><div class="container" style="padding:14px 18px">' + (s.kbg === 'hero' ? stripKbg(s.html) : s.html) + '</div></section>';
         }).join('');
-        t2.innerHTML = '<iframe srcdoc="' + esc('<!DOCTYPE html><html><head><meta charset="utf-8"><link rel="stylesheet" href="style.css"><style>body{margin:0;background:#f4f6f8}</style></head><body>' + inner + '</body></html>') + '"></iframe>' +
+        t2.innerHTML = '<iframe srcdoc="' + esc('<!DOCTYPE html><html><head><meta charset="utf-8"><link rel="stylesheet" href="style.css?v=202609291"><style>body{margin:0;background:#f4f6f8}</style></head><body>' + inner + '</body></html>') + '"></iframe>' +
           '<div class="pt-name">Шаблон: ' + esc(t.name) + '</div><div class="pt-desc">Добавит ' + t.sections.length + ' секций (без бункера)</div>';
         t2.addEventListener('click', function () {
           var page = state.page;
