@@ -1,0 +1,1215 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Редактор сайта (локальный)</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%231f6fce' d='M12 2.7l5.66 5.66a8 8 0 1 1-11.31 0z'/%3E%3C/svg%3E">
+<style>
+:root{--navy:#12283c;--acc:#1f6fce;--line:#d7dee5;--mut:#5d6b7a}
+*{box-sizing:border-box}
+body{margin:0;background:#f4f6f8;color:#1d2733;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;font-size:15px;line-height:1.5}
+.top{background:var(--navy);color:#fff;padding:12px 20px;display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.top b{font-size:16px}
+.top .tag{color:#8ba3bd;font-size:12px}
+.top a{color:#c9d6e4;text-decoration:none;font-size:14px}
+.top a:hover{color:#fff}
+.wrap{max-width:1000px;margin:0 auto;padding:24px 16px 60px}
+.card{background:#fff;border:1px solid var(--line);border-radius:10px;padding:20px;margin-bottom:16px}
+.card h2{margin:0 0 12px;font-size:19px;color:var(--navy)}
+.btn{display:inline-block;background:var(--acc);color:#fff;border:0;padding:10px 18px;border-radius:8px;font-size:14.5px;font-weight:700;cursor:pointer;text-decoration:none}
+.btn:hover{background:#15549f}
+.btn2{background:#fff;color:var(--navy);border:1px solid var(--line)}
+.btn2:hover{background:#eef3f9}
+.btn-red{background:#fff;color:#c0392b;border:1px solid #e5b9b3}
+.btn-red:hover{background:#fdf1ef}
+.btn:disabled{opacity:.5;cursor:default}
+table{width:100%;border-collapse:collapse}
+th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--line);font-size:14.5px;vertical-align:middle}
+th{color:var(--mut);font-size:12.5px;text-transform:uppercase;letter-spacing:.05em}
+.msg{background:#e8f6ee;border:1px solid #b7dfc6;color:#1e6b41;padding:10px 14px;border-radius:8px;margin-bottom:16px}
+.err{background:#fdf1ef;border:1px solid #e5b9b3;color:#96271b;padding:10px 14px;border-radius:8px;margin-bottom:16px}
+.toolbar{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 8px}
+.toolbar button{border:1px solid var(--line);background:#fff;border-radius:6px;padding:6px 10px;font-size:13px;cursor:pointer;font-weight:600;color:var(--navy)}
+.toolbar button:hover{background:#eef3f9}
+label{display:block;font-weight:700;font-size:13.5px;margin:0 0 6px;color:var(--navy)}
+input[type=text],input[type=password]{width:100%;padding:11px;border:1px solid var(--line);border-radius:8px;font-size:16px}
+.row{margin-bottom:14px}
+.hint{color:var(--mut);font-size:12.5px;margin:6px 0 0}
+.blk{border:1px solid var(--line);border-radius:10px;padding:14px;margin-bottom:16px;background:#eef2f6}
+.blk > .blk-head{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:8px}
+.blk > .blk-head label{margin:0}
+.brow{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:10px}
+.small{font-size:12px;color:var(--mut)}
+.badge{display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;border-radius:999px;background:#fdf3e3;color:#9a5b00;border:1px solid #d9a441}
+.badge.new{background:#e8f1fd;color:#15549f;border-color:#b9d4f0}
+.bframe{width:100%;border:1px solid var(--line);border-radius:8px;background:#fff;display:block}
+.dirty-dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:#e67e22;margin-left:6px}
+.pickback{position:fixed;inset:0;background:rgba(14,36,56,.55);z-index:9000;display:flex;align-items:flex-start;justify-content:center;overflow:auto;padding:30px 14px}
+.pickbox{background:#fff;border-radius:12px;max-width:900px;width:100%;padding:18px}
+.pickbox h2{margin:0 0 4px;font-size:19px;color:var(--navy)}
+.pickgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}
+.pickgrid iframe{width:100%;height:170px;border:1px solid var(--line);border-radius:8px;background:#f4f6f8}
+.ptile{cursor:pointer;border:1px solid var(--line);border-radius:10px;padding:10px;background:#fff}
+.ptile:hover{border-color:var(--acc);box-shadow:0 6px 18px rgba(18,40,60,.12)}
+.ptile .pt-name{font-weight:700;font-size:13.5px;color:var(--navy);margin-top:8px}
+.ptile .pt-desc{font-size:12px;color:var(--mut)}
+.ptile .tpl-prev{width:100%;height:170px;border:1px solid var(--line);border-radius:8px;background:#f4f6f8}
+.ptile[data-tpl="none"] .tpl-prev{border-style:dashed}
+.login{min-height:100vh;display:flex;align-items:center;justify-content:center}
+.login .card{max-width:360px;width:calc(100% - 32px)}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script src="k-local.js"></script>
+<script>
+(function () {
+  'use strict';
+  var KHASH = 'df2b5bf06672798a084ff726ca513d88cad081536bc5bf6d0d83b44a586dde75';
+  if (location.protocol !== 'file:') {
+    document.getElementById('app').innerHTML = '<div class="wrap"><div class="card"><h2>Это локальная версия редактора</h2><p>Она работает, когда сайт открыт с диска. На сервере правки делаются через основной редактор: <a href="jwd3jjzdzq.php">jwd3jjzdzq.php</a></p></div></div>';
+    return;
+  }
+  var P = 'km.';
+  function jget(k, d) { try { var v = localStorage.getItem(P + k); return v === null ? d : JSON.parse(v); } catch (e) { return d; } }
+  function jset(k, v) {
+    try { localStorage.setItem(P + k, JSON.stringify(v)); return true; }
+    catch (e) { alert('В браузере не хватает места. Уменьшите картинку и попробуйте снова.'); return false; }
+  }
+  function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+
+  var SPRITE = '<svg xmlns="http://www.w3.org/2000/svg" style="display:none" aria-hidden="true">' +
+    '<symbol id="i-drop" viewBox="0 0 24 24"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></symbol>' +
+    '<symbol id="i-doc" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></symbol>' +
+    '<symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></symbol>' +
+    '<symbol id="i-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2"/><line x1="12" y1="3.5" x2="12" y2="6.2"/><line x1="12" y1="17.8" x2="12" y2="20.5"/><line x1="3.5" y1="12" x2="6.2" y2="12"/><line x1="17.8" y1="12" x2="20.5" y2="12"/><line x1="5.9" y1="5.9" x2="7.8" y2="7.8"/><line x1="16.2" y1="16.2" x2="18.1" y2="18.1"/><line x1="5.9" y1="18.1" x2="7.8" y2="16.2"/><line x1="16.2" y1="7.8" x2="18.1" y2="5.9"/></symbol>' +
+    '<symbol id="i-truck" viewBox="0 0 24 24"><rect x="1" y="5" width="14" height="11" rx="1"/><polygon points="15 9 19 9 22 12 22 16 15 16"/><circle cx="5.5" cy="18.5" r="2"/><circle cx="18.5" cy="18.5" r="2"/></symbol>' +
+    '<symbol id="i-check" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></symbol>' +
+    '<symbol id="i-arrow" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></symbol>' +
+    '<symbol id="i-package" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></symbol>' +
+    '</svg>';
+
+  var SKELETONS = [
+    { id: 'text', name: 'Текст', desc: 'Один или два абзаца', alt: false,
+      html: '<p>Расскажите здесь о вашем предложении: что поставляете, для кого и в какие сроки.</p><p>Второй абзац — детали, условия работы, гарантии.</p>' },
+    { id: 'head-text', name: 'Заголовок + текст', desc: 'Подраздел с заголовком', alt: false,
+      html: '<h3>Заголовок раздела</h3><p>Поясняющий текст под заголовком: ключевые условия, состав предложения.</p>' },
+    { id: 'stats', name: 'Цифры ×3', desc: 'Крупные числа-факты', alt: true,
+      html: '<div class="stats"><div class="stat"><b>10+</b><span>лет на рынке</span></div><div class="stat"><b>500</b><span>наименований продукции</span></div><div class="stat"><b>40</b><span>постоянных клиентов</span></div></div>' },
+    { id: 'checks', name: 'Чек-лист', desc: 'Список с галочками', alt: false,
+      html: '<ul class="checks"><li>Первое преимущество или условие.</li><li>Второе преимущество или условие.</li><li>Третье преимущество или условие.</li></ul>' },
+    { id: 'steps', name: 'Этапы ×3', desc: 'Схема «шаг за шагом»', alt: true,
+      html: '<div class="steps"><div class="step"><div class="step-num">1</div><h3>Шаг один</h3><p>Что происходит на первом шаге.</p></div><div class="step-arrow"><svg class="ico"><use href="#i-arrow"/></svg></div><div class="step"><div class="step-num">2</div><h3>Шаг два</h3><p>Что происходит на втором шаге.</p></div><div class="step-arrow"><svg class="ico"><use href="#i-arrow"/></svg></div><div class="step"><div class="step-num">3</div><h3>Шаг три</h3><p>Результат шага.</p></div></div>' },
+    { id: 'quote', name: 'Цитата', desc: 'Выделенная врезка', alt: false,
+      html: '<blockquote class="quote">Важная мысль или обещание компании — то, что должно запомниться клиенту.</blockquote>' },
+    { id: 'callout', name: 'Важно', desc: 'Плашка с иконкой', alt: false,
+      html: '<div class="callout"><svg class="ico"><use href="#i-doc"/></svg><span>Важная информация: документы, сроки, особые условия.</span></div>' },
+    { id: 'photo', name: 'Фото', desc: 'Место под фотографию', alt: true,
+      html: '<div class="media-ph">Плейсхолдер под фото. Вставьте картинку кнопкой «Картинка» — плейсхолдер можно заменить или удалить.</div>' },
+    { id: 'list', name: 'Список', desc: 'Обычный маркированный', alt: false,
+      html: '<ul><li>Пункт списка.</li><li>Пункт списка.</li><li>Пункт списка.</li></ul>' }
+  ];
+
+  var TEMPLATES = [{"id": "pod-zakaz", "name": "Поставки под заказ", "desc": "Предложение + этапы + преимущества", "lead": "<p>Привезём оборудование, комплектующие и запчасти из Европы и Азии под задачи вашего производства — с договором, документами и фиксированной стоимостью.<\/p>", "sections": [{"kbg": "hero", "html": "<div class=\"khero\"><svg class=\"khero-ico\"><use href=\"#i-gear\"/><\/svg><div class=\"khero-k\">НАПРАВЛЕНИЕ ПОСТАВОК<\/div><div class=\"khero-t\">Поставки под заказ<\/div><div class=\"khero-l\">Подберём, привезём и оформим — вы получаете готовое решение под ключ.<\/div><\/div>"}, {"kbg": "gray", "html": "<div class=\"cards\"><article class=\"card\"><div class=\"card-ico\"><svg class=\"ico\"><use href=\"#i-gear\"/><\/svg><\/div><h3>Оборудование<\/h3><p>Станки, линии и производственное оборудование под ваш техпроцесс.<\/p><\/article><article class=\"card\"><div class=\"card-ico\"><svg class=\"ico\"><use href=\"#i-package\"/><\/svg><\/div><h3>Комплектующие<\/h3><p>Узлы, детали и расходные материалы, которых нет на российском рынке.<\/p><\/article><article class=\"card\"><div class=\"card-ico\"><svg class=\"ico\"><use href=\"#i-drop\"/><\/svg><\/div><h3>Запчасти<\/h3><p>Оригинальные запчасти к импортному оборудованию по артикулу или образцу.<\/p><\/article><\/div>"}, {"kbg": "white", "html": "<h3>Как проходит поставка<\/h3><ul class=\"checks\"><li>Вы присылаете заявку: описание, артикулы или образец.<\/li><li>Мы проверяем возможность поставки и согласуем цену со сроками.<\/li><li>Заключаем договор с фиксированной стоимостью.<\/li><li>Выкупаем товар, организуем логистику и таможню.<\/li><li>Передаём заказ с полным комплектом документов.<\/li><\/ul>"}, {"kbg": "dark", "html": "<div class=\"stats\"><div class=\"stat\"><b>14<\/b><span>дней — средний срок поставки<\/span><\/div><div class=\"stat\"><b>40+<\/b><span>стран поставки<\/span><\/div><div class=\"stat\"><b>98%<\/b><span>заявок выполняем<\/span><\/div><\/div>"}, {"kbg": "white", "html": "<blockquote class=\"quote\">Каждая поставка — под контролем менеджера: вы всегда знаете, где ваш груз и что происходит дальше.<\/blockquote>"}]}, {"id": "o-kompanii", "name": "О компании", "desc": "История, цифры, преимущества", "lead": "<p>Мультибрендовая компания: официальные поставки, подбор и техническая поддержка предприятий по всей России.<\/p>", "sections": [{"kbg": "hero", "html": "<div class=\"khero\"><svg class=\"khero-ico\"><use href=\"#i-doc\"/><\/svg><div class=\"khero-k\">О НАС<\/div><div class=\"khero-t\">О компании<\/div><div class=\"khero-l\">Команда технических специалистов, которая понимает производство изнутри.<\/div><\/div>"}, {"kbg": "white", "html": "<p>Компания работает с производственными предприятиями, строительными компаниями и сервисными службами: подбираем и поставляем оборудование, комплектующие и расходные материалы, ведём снабжение по графику.<\/p><p>В команде — технические специалисты, которые разбираются не только в бумагах, но и в самом производстве: подскажем аналог, найдём редкую позицию, поможем с выбором.<\/p>"}, {"kbg": "gray", "html": "<div class=\"stats\"><div class=\"stat\"><b>10+<\/b><span>лет на рынке<\/span><\/div><div class=\"stat\"><b>200+<\/b><span>постоянных клиентов<\/span><\/div><div class=\"stat\"><b>5 000+<\/b><span>позиций в поставках<\/span><\/div><div class=\"stat\"><b>40<\/b><span>стран поставки<\/span><\/div><\/div>"}, {"kbg": "white", "html": "<ul class=\"checks\"><li>Официальные договоры и прозрачные цены<\/li><li>Персональный менеджер на каждый объект<\/li><li>Отсрочка платежа для юридических лиц<\/li><li>Доставка по Москве и всей России<\/li><\/ul>"}, {"kbg": "gray", "html": "<blockquote class=\"quote\">Мы предлагаем максимум качества и надёжности — через продукцию и услуги для современного производства.<\/blockquote>"}]}, {"id": "kak-rabotaem", "name": "Как мы работаем", "desc": "Процесс по шагам + таймлайн", "lead": "<p>Прозрачный процесс работы: вы видите каждый этап — от заявки до передачи документов.<\/p>", "sections": [{"kbg": "hero", "html": "<div class=\"khero\"><svg class=\"khero-ico\"><use href=\"#i-arrow\"/><\/svg><div class=\"khero-k\">ПРОЦЕСС<\/div><div class=\"khero-t\">Как мы работаем<\/div><div class=\"khero-l\">Каждый шаг фиксируется — вы всегда знаете статус вашего заказа.<\/div><\/div>"}, {"kbg": "white", "html": "<div class=\"steps\"><div class=\"step\"><div class=\"step-num\">1<\/div><h3>Заявка<\/h3><p>Присылаете перечень или описание задачи — фиксируем требования.<\/p><\/div><div class=\"step-arrow\"><svg class=\"ico\"><use href=\"#i-arrow\"/><\/svg><\/div><div class=\"step\"><div class=\"step-num\">2<\/div><h3>Подбор<\/h3><p>Подбираем позиции, проверяем поставщиков, согласуем цену.<\/p><\/div><div class=\"step-arrow\"><svg class=\"ico\"><use href=\"#i-arrow\"/><\/svg><\/div><div class=\"step\"><div class=\"step-num\">3<\/div><h3>Договор<\/h3><p>Фиксируем стоимость и сроки в договоре.<\/p><\/div><\/div>"}, {"kbg": "gray", "html": "<h3>Что происходит после договора<\/h3><div class=\"timeline\"><div class=\"tl-item\"><b>Выкуп и проверка<\/b><span>Проверяем товар на складе поставщика, делаем фото и видео.<\/span><\/div><div class=\"tl-item\"><b>Логистика<\/b><span>Организуем доставку и таможенное оформление.<\/span><\/div><div class=\"tl-item\"><b>Приёмка<\/b><span>Проверяем комплектность на нашем складе.<\/span><\/div><div class=\"tl-item\"><b>Передача<\/b><span>Отгружаем вам с полным комплектом документов.<\/span><\/div><\/div>"}, {"kbg": "dark", "html": "<div class=\"callout\"><svg class=\"ico\"><use href=\"#i-doc\"/><\/svg><span>На каждом этапе вы получаете фото- и видеоотчёты — вы всегда знаете статус поставки.<\/span><\/div>"}]}, {"id": "katalog", "name": "Каталог направлений", "desc": "Сетка из 6 направлений + список", "lead": "<p>Полная ассортиментная линейка с документами: подберём позиции, аналоги и замены снятых с производства товаров.<\/p>", "sections": [{"kbg": "hero", "html": "<div class=\"khero\"><svg class=\"khero-ico\"><use href=\"#i-package\"/><\/svg><div class=\"khero-k\">АССОРТИМЕНТ<\/div><div class=\"khero-t\">Каталог направлений<\/div><div class=\"khero-l\">Полная линейка продукции с документами и поддержкой подбора.<\/div><\/div>"}, {"kbg": "gray", "html": "<div class=\"cards\"><article class=\"card\"><div class=\"card-ico\"><svg class=\"ico\"><use href=\"#i-gear\"/><\/svg><\/div><h3>Станки и оборудование<\/h3><p>Металло- и деревообработка, ЧПУ, лазеры.<\/p><\/article><article class=\"card\"><div class=\"card-ico\"><svg class=\"ico\"><use href=\"#i-tool\"/><\/svg><\/div><h3>Инструмент<\/h3><p>Ручной, электро- и пневмоинструмент, оснастка.<\/p><\/article><article class=\"card\"><div class=\"card-ico\"><svg class=\"ico\"><use href=\"#i-drop\"/><\/svg><\/div><h3>Смазочные материалы<\/h3><p>Масла, СОЖ, смазки ведущих производителей.<\/p><\/article><article class=\"card\"><div class=\"card-ico\"><svg class=\"ico\"><use href=\"#i-package\"/><\/svg><\/div><h3>Комплектующие<\/h3><p>Узлы, детали и запчасти под заказ.<\/p><\/article><article class=\"card\"><div class=\"card-ico\"><svg class=\"ico\"><use href=\"#i-shield\"/><\/svg><\/div><h3>СИЗ<\/h3><p>Средства индивидуальной защиты оптом.<\/p><\/article><article class=\"card\"><div class=\"card-ico\"><svg class=\"ico\"><use href=\"#i-hammer\"/><\/svg><\/div><h3>Стройматериалы<\/h3><p>Крепёж, метизы, расходники для стройки.<\/p><\/article><\/div>"}, {"kbg": "white", "html": "<h3>Что входит в поставку<\/h3><ul class=\"checks\"><li>Подбор позиций по описанию, артикулу или образцу<\/li><li>Сертификаты и паспорта на всю продукцию<\/li><li>Формирование комплектов под объект или цех<\/li><li>Доставка до склада или объекта<\/li><\/ul>"}]}, {"id": "logistika", "name": "Доставка и логистика", "desc": "Способы доставки + цифры", "lead": "<p>Доставка авиа, авто и морем: подберём маршрут под ваши сроки и бюджет, оформим таможню за вас.<\/p>", "sections": [{"kbg": "hero", "html": "<div class=\"khero\"><svg class=\"khero-ico\"><use href=\"#i-truck\"/><\/svg><div class=\"khero-k\">ЛОГИСТИКА<\/div><div class=\"khero-t\">Доставка и логистика<\/div><div class=\"khero-l\">Маршрут под ваши сроки и бюджет — авиа, авто или море.<\/div><\/div>"}, {"kbg": "white", "html": "<div class=\"steps\"><div class=\"step\"><div class=\"step-num\">1<\/div><h3>Авиа<\/h3><p>Срочные грузы — от 5 дней. Дорого, но максимально быстро.<\/p><\/div><div class=\"step-arrow\"><svg class=\"ico\"><use href=\"#i-arrow\"/><\/svg><\/div><div class=\"step\"><div class=\"step-num\">2<\/div><h3>Авто<\/h3><p>Оптимальный вариант для Европы — 10–20 дней.<\/p><\/div><div class=\"step-arrow\"><svg class=\"ico\"><use href=\"#i-arrow\"/><\/svg><\/div><div class=\"step\"><div class=\"step-num\">3<\/div><h3>Море и жд<\/h3><p>Крупные партии из Китая — 35–60 дней, самая низкая цена за кг.<\/p><\/div><\/div>"}, {"kbg": "gray", "html": "<div class=\"stats\"><div class=\"stat\"><b>35–60<\/b><span>дней доставка из Китая<\/span><\/div><div class=\"stat\"><b>140<\/b><span>стран и портов поставки<\/span><\/div><div class=\"stat\"><b>0 ₽<\/b><span>за расчёт логистики<\/span><\/div><\/div>"}, {"kbg": "white", "html": "<div class=\"callout\"><svg class=\"ico\"><use href=\"#i-doc\"/><\/svg><span>Таможенное оформление, страховка груза и полный пакет документов входят в стоимость.<\/span><\/div>"}]}, {"id": "dokumenty", "name": "Документы и гарантии", "desc": "Документооборот + гарантии", "lead": "<p>Работаем официально: договор, счёт-фактура, паспорта и сертификаты на всю поставляемую продукцию.<\/p>", "sections": [{"kbg": "hero", "html": "<div class=\"khero\"><svg class=\"khero-ico\"><use href=\"#i-check\"/><\/svg><div class=\"khero-k\">ГАРАНТИИ<\/div><div class=\"khero-t\">Документы и гарантии<\/div><div class=\"khero-l\">Официальный договор, полная отчетность и ответственность за результат.<\/div><\/div>"}, {"kbg": "white", "html": "<ul class=\"checks\"><li>Договор поставки с фиксированной ценой и сроками<\/li><li>Паспорта безопасности на всю продукцию<\/li><li>Сертификаты соответствия и отказные письма<\/li><li>Счёт-фактура и УПД для бухгалтерии<\/li><li>Гарантийные обязательства производителей<\/li><\/ul>"}, {"kbg": "gray", "html": "<div class=\"callout\"><svg class=\"ico\"><use href=\"#i-doc\"/><\/svg><span>Работаем с юридическими лицами и ИП. Отсрочка платежа — по договору для постоянных клиентов.<\/span><\/div>"}, {"kbg": "white", "html": "<blockquote class=\"quote\">Все документы готовим заранее — бухгалтерия получает полный пакет вместе с товаром, а не «потом».<\/blockquote>"}]}, {"id": "otrasli", "name": "Отрасли", "desc": "Кому поставляем + примеры", "lead": "<p>Обслуживаем производства, строительные компании, транспорт и пищевую отрасль — подберём решение под вашу отрасль.<\/p>", "sections": [{"kbg": "hero", "html": "<div class=\"khero\"><svg class=\"khero-ico\"><use href=\"#i-globe\"/><\/svg><div class=\"khero-k\">ОТРАСЛИ<\/div><div class=\"khero-t\">Отрасли<\/div><div class=\"khero-l\">Решения для производства, строительства, транспорта и пищевой отрасли.<\/div><\/div>"}, {"kbg": "gray", "html": "<div class=\"cards\"><article class=\"card\"><div class=\"card-ico\"><svg class=\"ico\"><use href=\"#i-gear\"/><\/svg><\/div><h3>Производство<\/h3><p>Снабжение цехов: от СОЖ до запчастей к станкам.<\/p><\/article><article class=\"card\"><div class=\"card-ico\"><svg class=\"ico\"><use href=\"#i-hammer\"/><\/svg><\/div><h3>Строительство<\/h3><p>Крепёж, СИЗ и инструмент по графику работ.<\/p><\/article><article class=\"card\"><div class=\"card-ico\"><svg class=\"ico\"><use href=\"#i-truck\"/><\/svg><\/div><h3>Транспорт<\/h3><p>Масла и запчасти для автопарков предприятий.<\/p><\/article><article class=\"card\"><div class=\"card-ico\"><svg class=\"ico\"><use href=\"#i-shield\"/><\/svg><\/div><h3>Пищевая отрасль<\/h3><p>Смазки с пищевым допуском и моющие средства.<\/p><\/article><\/div>"}, {"kbg": "white", "html": "<h3>Пример из практики<\/h3><p>Для металлообрабатывающего предприятия подобрали и поставили б/у обрабатывающий центр из Европы — на 60% дешевле нового, с пусконаладкой и гарантией. Производство запустили через 6 недель после заявки.<\/p><p>Таких проектов — десятки: от единичных позиций до постоянного снабжения нескольких площадок.<\/p>"}]}, {"id": "faq", "name": "Частые вопросы", "desc": "Аккордеон вопрос-ответ", "lead": "<p>Собрали вопросы, которые чаще всего задают перед первым заказом. Не нашли свой — напишите нам.<\/p>", "sections": [{"kbg": "hero", "html": "<div class=\"khero\"><svg class=\"khero-ico\"><use href=\"#i-check\"/><\/svg><div class=\"khero-k\">ВОПРОСЫ<\/div><div class=\"khero-t\">Частые вопросы<\/div><div class=\"khero-l\">Отвечаем на частые вопросы клиентов — до и после заказа.<\/div><\/div>"}, {"kbg": "white", "html": "<div class=\"faq\"><details open><summary>Вы работаете с юридическими лицами?<\/summary><div class=\"faq-a\">Да, мы работаем только с юрлицами и ИП по договору. Отсрочка платежа — для постоянных клиентов.<\/div><\/details><details><summary>Как быстро вы отвечаете на заявку?<\/summary><div class=\"faq-a\">В рабочий день — в течение 2–3 часов. Сложные позиции проверяем у поставщиков до 24 часов.<\/div><\/details><details><summary>Можно ли заказать одну позицию?<\/summary><div class=\"faq-a\">Да, работаем и с единичными позициями, и с регулярными поставками по графику.<\/div><\/details><details><summary>Какие документы вы предоставляете?<\/summary><div class=\"faq-a\">Договор, счёт-фактуру, УПД, паспорта безопасности и сертификаты соответствия.<\/div><\/details><details><summary>Что с доставкой по России?<\/summary><div class=\"faq-a\">Доставляем по Москве и в любой регион — транспортной компанией или нашим транспортом.<\/div><\/details><details><summary>Даёте ли отсрочку платежа?<\/summary><div class=\"faq-a\">Да, после первых поставок — по договору, обычно до 14–30 дней.<\/div><\/details><\/div>"}, {"kbg": "gray", "html": "<div class=\"callout\"><svg class=\"ico\"><use href=\"#i-doc\"/><\/svg><span>Не нашли ответ? Позвоните: +7 (495) 973-20-44 — департамент продаж.<\/span><\/div>"}]}, {"id": "usloviya", "name": "Условия работы", "desc": "Условия + сравнение в таблице", "lead": "<p>Прозрачные условия для постоянных клиентов: договор, отсрочка, персональный менеджер и резерв позиций под объект.<\/p>", "sections": [{"kbg": "hero", "html": "<div class=\"khero\"><svg class=\"khero-ico\"><use href=\"#i-doc\"/><\/svg><div class=\"khero-k\">УСЛОВИЯ<\/div><div class=\"khero-t\">Условия работы<\/div><div class=\"khero-l\">Прозрачные условия для разовых закупок и постоянных клиентов.<\/div><\/div>"}, {"kbg": "white", "html": "<ul class=\"checks\"><li>Закреплённый менеджер — знает вашу специфику<\/li><li>Резерв позиций под ваши объекты<\/li><li>Отсрочка платежа по договору<\/li><li>Скидки от объёма и регулярности поставок<\/li><\/ul>"}, {"kbg": "gray", "html": "<h3>Разовая закупка или постоянная работа<\/h3><table class=\"ptable\"><tr><th><\/th><th>Разовая закупка<\/th><th>Постоянный клиент<\/th><\/tr><tr><td>Цены<\/td><td>Прайсовые<\/td><td>Скидка от объёма<\/td><\/tr><tr><td>Оплата<\/td><td>По счёту<\/td><td>Отсрочка до 30 дней<\/td><\/tr><tr><td>Резерв товара<\/td><td>—<\/td><td>Под объект<\/td><\/tr><tr><td>Менеджер<\/td><td>Общий<\/td><td>Закреплённый<\/td><\/tr><\/table>"}, {"kbg": "white", "html": "<p>Пришлите заявку или спецификацию — подготовим коммерческое предложение с ценами и сроками в течение рабочего дня.<\/p>"}]}, {"id": "zayavka", "name": "Оформление заявки", "desc": "Как отправить заявку + вехи", "lead": "<p>Отправьте заявку — подготовим предложение с ценами и сроками. Это бесплатно и ни к чему не обязывает.<\/p>", "sections": [{"kbg": "hero", "html": "<div class=\"khero\"><svg class=\"khero-ico\"><use href=\"#i-send\"/><\/svg><div class=\"khero-k\">ЗАЯВКА<\/div><div class=\"khero-t\">Оформление заявки<\/div><div class=\"khero-l\">Бесплатный расчёт в течение рабочего дня — без обязательств.<\/div><\/div>"}, {"kbg": "white", "html": "<h3>Что можно указать в заявке<\/h3><ul class=\"checks\"><li>Артикулы, названия или фото продукции<\/li><li>Описание задачи — подберём сами<\/li><li>Объём и сроки, которые важны<\/li><\/ul>"}, {"kbg": "gray", "html": "<div class=\"timeline\"><div class=\"tl-item\"><b>Заявка<\/b><span>Отправляете на почту или звоните<\/span><\/div><div class=\"tl-item\"><b>Расчёт<\/b><span>В течение рабочего дня — цены и сроки<\/span><\/div><div class=\"tl-item\"><b>Договор<\/b><span>Фиксируем условия и начинаем поставку<\/span><\/div><\/div>"}, {"kbg": "dark", "html": "<div class=\"callout\"><svg class=\"ico\"><use href=\"#i-mail\"/><\/svg><span>Почта для заявок: info@techmasla.ru · Телефон: +7 (495) 973-20-44<\/span><\/div>"}]}];
+
+  var REAL = [
+    ['index.html', 'Главная'],
+    ['bu-stanki-iz-evropy.html', 'Станки Б/У из Европы'],
+    ['instrumenty-iz-evropy.html', 'Инструменты из Европы'],
+    ['tovary-iz-evropy-pod-zakaz.html', 'Товары из Европы под заказ'],
+    ['instrument-i-stanki-iz-kitaya.html', 'Инструмент и станки из Китая'],
+    ['tovary-dlya-stroitelstva.html', 'Товары для строительства']
+  ];
+
+  var SNAP = {"index.html": {"title": "ООО «Индустриальные ТехМасла» — <span>мультибрендовая компания<\/span>", "blocks": {"lead": "<p>Официальный поставщик смазочных материалов BP, Castrol (Optimol, bp, Tribol, Molub-Alloy, Brayco, Braycote) и Rhenus.<\/p>", "about": "\n          <p>Компания предлагает совокупность эффективных решений в области поставок и реализации смазочных материалов по всей ассортиментной линейке. Оказываем услуги по подбору смазочных материалов, которые позволяют адаптировать технологические процессы, касающиеся обработки металлов резанием и давлением, к современным требованиям по безопасности, надежности и эффективности производства.<\/p>\n          <p>В компании работают высококвалифицированные технические специалисты, способные конструктивно решить различные технологические задачи на производстве. В особых случаях компанию консультируют технические специалисты от компаний-производитей, которые дают рекомендации по решению сложных технологических задач, основываясь на передовой опыт.<\/p>\n          <p>Мы предлагаем высокачественную продукцию на российский рынок по разумным ценам.<\/p>\n        "}}, "bu-stanki-iz-evropy.html": {"title": "БУ станки из Европы", "blocks": {"lead": "<p>Б/у станки из Европы с проверенной историей эксплуатации: цена в 2–3 раза ниже нового оборудования при сопоставимом ресурсе.<\/p>", "about": "<p>Подбираем и поставляем б/у станки из Европы для металлообрабатывающих производств: токарные, фрезерные, шлифовальные и расточные станки, вертикальные обрабатывающие центры, листогибочное и гибочное оборудование. Каждое предложение проверяем перед покупкой: состояние узлов и геометрии, наработку, комплектность, документы и историю эксплуатации.<\/p>\n        <p>Работаем напрямую с дилерами и производствами в Германии, Италии, Чехии и других странах Европы, поэтому предлагаем честные цены без лишних посредников. Перед покупкой вы получаете фото, видео и технический отчёт по станку — вы видите, за что платите.<\/p>\n        <ul>\n          <li>Цена в 2–3 раза ниже нового станка при сопоставимом ресурсе<\/li>\n          <li>Проверка оборудования перед покупкой: отчёт, фото, видео<\/li>\n          <li>Подбор под ваш техпроцесс и бюджет за 3–5 рабочих дней<\/li>\n          <li>Доставка и таможенное оформление до вашего производства<\/li>\n          <li>Помощь с пусконаладкой и подбором запасных частей<\/li>\n        <\/ul>\n        <p>Отправьте заявку с параметрами оборудования — подберём варианты под ваш бюджет, рассчитаем стоимость «под ключ» и согласуем сроки поставки.<\/p>", "cta": "<p>За более подробной информацией, а так же за технической поддержкой обращайтесь к нашим специалистам.<\/p>"}}, "instrumenty-iz-evropy.html": {"title": "Инструменты из Европы", "blocks": {"lead": "<p>Профессиональные инструменты из Европы для производства, строительства и сервиса — оригинальная продукция с сертификатами и оптовыми ценами.<\/p>", "about": "<p>Поставляем профессиональные инструменты из Европы для производственных предприятий, строительных компаний и сервисных служб: ручной и электроинструмент, пневмоинструмент, измерительное оборудование, режущий инструмент и оснастка.<\/p>\n        <p>В ассортименте — продукция ведущих европейских производителей. Вся продукция оригинальная, с сертификатами соответствия и паспортами. Подбираем аналоги под ваши задачи и объёмы, отгружаем от небольших партий до регулярных поставок по графику.<\/p>\n        <ul>\n          <li>Оригинальная продукция с сертификатами соответствия<\/li>\n          <li>Оптовые цены и персональные условия для постоянных клиентов<\/li>\n          <li>Подбор аналогов и замены снятых с производства позиций<\/li>\n          <li>Доставка по Москве и всей России<\/li>\n          <li>Отсрочка платежа для юридических лиц по договору<\/li>\n        <\/ul>\n        <p>Пришлите спецификацию или перечень позиций — рассчитаем цены и сроки поставки в течение одного рабочего дня.<\/p>", "cta": "<p>За более подробной информацией, а так же за технической поддержкой обращайтесь к нашим специалистам.<\/p>"}}, "tovary-iz-evropy-pod-zakaz.html": {"title": "Товары из Европы под заказ", "blocks": {"lead": "<p>Привезём из Европы под заказ оборудование, комплектующие и товары, которых нет на российском рынке, — с прозрачной стоимостью и полным комплектом документов.<\/p>", "about": "<p>Привозим из Европы под заказ то, чего нет на российском рынке: оборудование, комплектующие, запчасти и товары для производства. Работаем с юридическими лицами по прозрачной схеме — вы знаете стоимость и сроки до начала сделки.<\/p>\n        <p>Как проходит поставка: вы отправляете заявку с описанием или артикулами, мы проверяем возможность поставки, согласовываем цену и сроки, заключаем договор, выкупаем товар и организуем доставку до вашего склада с полным комплектом документов.<\/p>\n        <ul>\n          <li>Поставка единичных позиций и регулярных партий<\/li>\n          <li>Прозрачная стоимость: комиссия и логистика фиксируются в договоре<\/li>\n          <li>Проверка поставщиков перед выкупом<\/li>\n          <li>Фото- и видеоотчёты на каждом этапе<\/li>\n          <li>Доставка авиа, авто и морем<\/li>\n        <\/ul>\n        <p>Опишите, что нужно привезти, — оценим возможность и сроки поставки бесплатно.<\/p>", "cta": "<p>За более подробной информацией, а так же за технической поддержкой обращайтесь к нашим специалистам.<\/p>"}}, "instrument-i-stanki-iz-kitaya.html": {"title": "Инструмент и станки из Китая", "blocks": {"lead": "<p>Станки и инструмент из Китая напрямую с заводов-производителей: ниже аналогов по цене, с контролем качества, гарантией и запчастями.<\/p>", "about": "<p>Поставляем станки и инструмент из Китая напрямую с заводов-производителей: ЧПУ-станки, лазерное и плазменное оборудование, токарные и фрезерные станки, электро- и ручной инструмент для металло- и деревообработки.<\/p>\n        <p>Отбираем проверенные заводы и контролируем качество до отгрузки: приёмка, тестовый прогон, проверка комплектации и упаковки. За счёт прямых контрактов цена ниже, чем у европейских аналогов, а окупаемость оборудования — от нескольких месяцев.<\/p>\n        <ul>\n          <li>Цена ниже европейских аналогов на 30–50%<\/li>\n          <li>Контроль оборудования перед отгрузкой с фото- и видеоотчётом<\/li>\n          <li>Гарантия и подбор запасных частей<\/li>\n          <li>Доставка морем, авто или жд — 35–60 дней<\/li>\n          <li>Помощь с пусконаладкой и обучением персонала<\/li>\n        <\/ul>\n        <p>Отправьте технические требования — подберём модель под задачу и бюджет, рассчитаем полную стоимость с доставкой.<\/p>", "cta": "<p>За более подробной информацией, а так же за технической поддержкой обращайтесь к нашим специалистам.<\/p>"}}, "tovary-dlya-stroitelstva.html": {"title": "Товары для строительства", "blocks": {"lead": "<p>Товары для строительства оптом для строительных компаний и подрядчиков: крепёж, СИЗ, инструмент и расходники с доставкой по России.<\/p>", "about": "<p>Поставляем товары для строительства оптом: крепёж и метизы, средства индивидуальной защиты, строительный инструмент, расходные материалы и оснастку для строительных компаний, подрядчиков и снабженцев.<\/p>\n        <p>Работаем как с постоянными позициями на складе, так и с поставками под заказ. Снабжение объектов ведём по графику, чтобы материалы приходили на объект точно к нужному этапу работ.<\/p>\n        <ul>\n          <li>Оптовые цены и скидки постоянным клиентам<\/li>\n          <li>Отгрузка от одной паллеты, доставка по Москве и России<\/li>\n          <li>Весь ассортимент с сертификатами и паспортами<\/li>\n          <li>Снабжение объектов по графику работ<\/li>\n          <li>Персональный менеджер и резерв позиций под объект<\/li>\n        <\/ul>\n        <p>Пришлите заявку или спецификацию объекта — подготовим коммерческое предложение с ценами и сроками.<\/p>", "cta": "<p>За более подробной информацией, а так же за технической поддержкой обращайтесь к нашим специалистам.<\/p>"}}};
+
+  function realPages() {
+    var reg = jget('reg', {}), del = jget('deleted', []);
+    var out = [];
+    REAL.forEach(function (p) {
+      var page = p[0];
+      if (del.indexOf(page) !== -1) return;
+      var r = reg[page] || SNAP[page] || { title: p[1], blocks: {} };
+      out.push({ file: page, title: r.title || p[1] });
+    });
+    return out;
+  }
+  function virtualPages() {
+    var virt = jget('virtual', {}), del = jget('deleted', []);
+    return Object.keys(virt).sort().filter(function (s) { return del.indexOf(s + '.html') === -1; })
+      .map(function (s) { return { file: s + '.html', title: virt[s].title }; });
+  }
+  function openPage(page) { window.open(new URL(page, location.href), '_blank'); }
+
+  function kbgOf(html) {
+    var m = /^<!--kbg:([a-z]+)-->/.exec(html || '');
+    return m ? m[1] : 'white';
+  }
+  function getBlocks(page) {
+    var slug = page.replace(/\.html$/, '');
+    var isVirt = !!jget('virtual', {})[slug];
+    var ovr = jget('ovr', {})[page] || {};
+    var d = jget('draft', {})[page] || {};
+    var out = [];
+    if (isVirt) {
+      var v = jget('virtual', {})[slug];
+      out.push({ id: 'lead', val: Object.prototype.hasOwnProperty.call(d, 'lead') ? d.lead : (Object.prototype.hasOwnProperty.call(ovr, 'lead') ? ovr.lead : (v.lead || '')), status: Object.prototype.hasOwnProperty.call(d, 'lead') ? 'draft' : (Object.prototype.hasOwnProperty.call(ovr, 'lead') ? 'pub' : 'orig'), kbg: 'white', alt: false });
+      (v.sections || []).forEach(function (s, i) {
+        var val = Object.prototype.hasOwnProperty.call(d, s.id) ? d[s.id] : (Object.prototype.hasOwnProperty.call(ovr, s.id) ? ovr[s.id] : s.html);
+        var kg = kbgOf(val);
+        if (s.kbg === 'hero') kg = 'hero';
+        out.push({ id: s.id, val: val, status: Object.prototype.hasOwnProperty.call(d, s.id) ? 'draft' : (Object.prototype.hasOwnProperty.call(ovr, s.id) ? 'pub' : 'orig'), kbg: kg, alt: kg === 'gray' || kg === 'dark' || kg === 'hero', secIndex: i });
+      });
+      return out;
+    }
+    var r = ((jget('reg', {})[page] || SNAP[page] || {}).blocks) || {};
+    var order = jget('order', {})[page] || [];
+    var ids = Object.keys(r);
+    Object.keys(ovr).concat(Object.keys(d)).filter(function (i) { return /^block-/.test(i); })
+      .sort().forEach(function (i) { if (ids.indexOf(i) < 0) ids.push(i); });
+    var ordered = order.filter(function (i) { return ids.indexOf(i) >= 0; });
+    ids.forEach(function (i) { if (ordered.indexOf(i) < 0) ordered.push(i); });
+    ordered.forEach(function (id) {
+      var val, status;
+      if (Object.prototype.hasOwnProperty.call(d, id)) { val = d[id]; status = Object.prototype.hasOwnProperty.call(ovr, id) ? 'draft' : 'new'; }
+      else if (Object.prototype.hasOwnProperty.call(ovr, id)) { val = ovr[id]; status = 'pub'; }
+      else { val = r[id] || ''; status = 'orig'; }
+      out.push({ id: id, val: val, status: status, kbg: kbgOf(val), alt: /^block-/.test(id) });
+    });
+    return out;
+  }
+
+  function blockLabel(id) {
+    if (id === 'lead') return 'Подзаголовок в верхней части страницы';
+    if (id === 'about') return 'Основной текст страницы';
+    if (id === 'cta') return 'Текст в блоке «Контакты»';
+    return 'Добавленный блок ' + id.replace('block-', '№');
+  }
+
+  function stripKbg(html) {
+    return (html || '').replace(/^<!--kbg:[a-z]+-->/, '');
+  }
+  function kbgPrefix(kbg) {
+    return kbg && kbg !== 'white' ? '<!--kbg:' + kbg + '-->' : '';
+  }
+  function kbgClass(kbg) {
+    return 'section' + (kbg === 'gray' ? ' section-alt' : '') + (kbg === 'dark' || kbg === 'hero' ? ' section-dark' : '');
+  }
+  function frameSrc(content, kbg, editable) {
+    var cls = 'section' + (kbg === 'gray' ? ' section-alt' : '') + (kbg === 'dark' || kbg === 'hero' ? ' section-dark' : '');
+    return '<!DOCTYPE html><html lang="ru"><head><meta charset="utf-8"><link rel="stylesheet" href="style.css">' +
+      '<style>body{background:#f4f6f8;margin:0}.container{padding:18px 20px}</style></head><body>' + SPRITE +
+      '<section class="' + cls + '"><div class="container"' + (editable ? ' contenteditable="true" spellcheck="false"' : '') + '>' + stripKbg(content) + '</div></section></body></html>';
+  }
+
+  function applyImgStyle(img, mode, w) {
+    var r = img.style.borderRadius || '12px';
+    img.style.width = (mode === 'full' ? 100 : w) + '%';
+    img.style.height = 'auto';
+    img.style.display = 'block';
+    img.style.float = 'none';
+    img.style.margin = '12px auto';
+    img.style.borderRadius = r;
+    if (mode === 'left') { img.style.float = 'left'; img.style.margin = '4px 20px 12px 0'; }
+    if (mode === 'right') { img.style.float = 'right'; img.style.margin = '4px 0 12px 20px'; }
+  }
+
+  function previewDoc(page) {
+    var slug = page.replace(/\\.html$/, '');
+    var isVirt = !!jget('virtual', {})[slug];
+    var blocks = getBlocks(page);
+    var ovrAll = jget('ovr', {})[page] || {};
+    var g = jget('global', {});
+    var contacts = jget('contacts', {
+      address: '119590 г. Москва, ул. Минская, д.1Г, корп.1, офис 14',
+      email: 'info@techmasla.ru', site: 'techmasla.ru',
+      phones: [{ tel: '+74959732044', label: '+7 (495) 973-20-44', note: 'департамент продаж' }],
+      extra: ''
+    });
+    var reg = jget('reg', {});
+    var title = isVirt ? jget('virtual', {})[slug].title : ((reg[page] || SNAP[page] || {}).title || page);
+    var menu = realPages().concat(virtualPages()).map(function (p) {
+      return '<li><a href="#" onclick="return false">' + esc(p.title) + '</a></li>';
+    }).join('');
+    var sections = blocks.filter(function (b) { return b.id !== 'lead'; }).map(function (b) {
+      var cls = kbgClass(b.kbg);
+      return '<section class="' + cls + '"><div class="container">' + stripKbg(b.val) + '</div></section>';
+    }).join('');
+    var banner = '<div style="background:#0e2438;color:#fff;font:600 13px Arial,sans-serif;padding:9px 14px;text-align:center">Предпросмотр — изменения не опубликованы</div>';
+    var phonesHtml = contacts.phones.map(function (p) {
+      return '<div class="contact-line"><svg class="ico"><use href="#i-phone"/></svg><span><a href="#" onclick="return false">' + esc(p.label) + '</a>' + (p.note ? ' - ' + esc(p.note) : '') + '</span></div>';
+    }).join('');
+    var extraHtml = contacts.extra ? '<div class="contact-line"><svg class="ico"><use href="#i-send"/></svg><span>' + esc(contacts.extra) + '</span></div>' : '';
+    var brandHtml = Object.prototype.hasOwnProperty.call(g, 'brand') ? stripKbg(g.brand) : 'ООО "Индустриальные<br>ТехМасла"';
+    var leadB = null;
+    blocks.forEach(function (b) { if (b.id === 'lead') leadB = b; });
+    return '<!DOCTYPE html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">' +
+      '<link rel="stylesheet" href="style.css"><style>body{margin:0}.container{max-width:1120px;margin:0 auto;padding:0 20px}</style></head><body>' + banner + SPRITE +
+      '<header class="site-header"><div class="container header-in">' +
+      '<a class="brand" href="#" onclick="return false"><svg class="brand-logo" viewBox="0 0 40 40"><rect width="40" height="40" rx="8" fill="#1f6fce"/><path d="M20 8l8.5 8.5a12 12 0 1 1-17 0z" fill="none" stroke="#fff" stroke-width="2.4"/></svg>' +
+      '<span class="brand-name">' + brandHtml + ' <small>techmasla.ru</small></span></a></div></header>' +
+      '<main>' +
+      '<section class="page-hero"><div class="container"><p class="hero-kicker">Предпросмотр · techmasla.ru</p><h1>' + esc(title) + '</h1>' +
+      '<div class="hero-lead">' + (leadB ? stripKbg(leadB.val) : '') + '</div></div></section>' +
+      sections +
+      '<section class="cta"><div class="container"><div class="cta-box"><div><h2>Контакты</h2>' +
+      '<div class="cta-p"><p>За более подробной информацией, а так же за технической поддержкой обращайтесь к нашим специалистам.</p></div></div>' +
+      '<div class="cta-actions"><a class="btn" href="#" onclick="return false">Написать нам</a><a class="btn btn-ghost" href="#" onclick="return false">' + esc(contacts.phones[0] ? contacts.phones[0].label : '') + '</a></div>' +
+      '</div></div></section></main>' +
+      '<footer class="footer" id="contacts"><div class="container"><div class="footer-grid">' +
+      '<div class="footer-brand"><span class="brand-name" style="color:#fff">' + brandHtml.replace(/<br>/g, ' ') + '</span><p>Мультибрендовая компания. Официальный поставщик смазочных материалов BP, Castrol и Rhenus.</p></div>' +
+      '<div><h3>Контакты</h3>' + phonesHtml +
+      '<div class="contact-line"><svg class="ico"><use href="#i-mail"/></svg><span>' + esc(contacts.email) + '</span></div>' +
+      '<div class="contact-line"><svg class="ico"><use href="#i-globe"/></svg><span>' + esc(contacts.site) + '</span></div>' +
+      extraHtml +
+      '<div class="contact-line"><svg class="ico"><use href="#i-pin"/></svg><span>Офис: ' + esc(contacts.address) + '</span></div>' +
+      '</div></div><div class="footer-bottom"><span>© 2026 ООО «Индустриальные ТехМасла»</span><span>techmasla.ru</span></div></div></footer>' +
+      '</body></html>';
+  }
+
+  function openPreview() {
+    var page = state.page;
+    var back = document.createElement('div');
+    back.className = 'pickback';
+    back.innerHTML = '<div class="pickbox" style="max-width:1100px">' +
+      '<h2>Предпросмотр <span class="badge">изменения не опубликованы</span></h2>' +
+      '<div style="display:flex;gap:8px;margin:0 0 10px;flex-wrap:wrap">' +
+      '<button type="button" class="btn btn2" data-dev="100%">Ноутбук</button>' +
+      '<button type="button" class="btn btn2" data-dev="768px">Планшет</button>' +
+      '<button type="button" class="btn btn2" data-dev="375px">Телефон</button>' +
+      '<span style="flex:1"></span>' +
+      '<button type="button" class="btn" id="pv-close">Закрыть</button></div>' +
+      '<iframe id="pv-frame" style="width:100%;height:70vh;border:1px solid var(--line);border-radius:8px;background:#fff;display:block"></iframe></div>';
+    document.body.appendChild(back);
+    var f = back.querySelector('#pv-frame');
+    f.srcdoc = previewDoc(page);
+    back.querySelectorAll('[data-dev]').forEach(function (b) {
+      b.addEventListener('click', function () {
+        f.style.width = b.getAttribute('data-dev');
+        f.style.margin = '0 auto';
+        setTimeout(function () {
+          try { f.style.height = Math.max(400, f.contentDocument.body.scrollHeight) + 'px'; } catch (e) {}
+        }, 150);
+      });
+    });
+    setTimeout(function () {
+      try { f.style.height = Math.max(400, f.contentDocument.body.scrollHeight) + 'px'; } catch (e) {}
+    }, 300);
+    back.querySelector('#pv-close').addEventListener('click', function () { back.remove(); });
+    back.addEventListener('click', function (e) { if (e.target === back) back.remove(); });
+  }
+
+  var state = { view: 'panel', page: null, msg: '', pickFor: null };
+  var frames = {};
+
+  function render() {
+    var app = document.getElementById('app');
+    frames = {};
+    if (sessionStorage.getItem('kAuth') !== '1') { app.innerHTML = loginHtml(); bindLogin(); return; }
+    var h = '<div class="top"><b>Редактор сайта</b> <span class="tag">локальный режим</span><span style="flex:1"></span>' +
+      '<a href="#" id="nav-panel">Все страницы</a><a href="#" id="nav-new">+ Новая страница</a><a href="#" id="nav-contacts">Контакты</a><a href="#" id="nav-reset">Сбросить правки</a><a href="#" id="nav-exit">Выйти</a></div>';
+    h += '<div class="wrap">' + (state.msg ? '<div class="msg">' + esc(state.msg) + '</div>' : '');
+    if (state.view === 'panel') h += panelHtml();
+    else if (state.view === 'page') h += pageHtml(state.page);
+    else if (state.view === 'new') h += newHtml();
+    else if (state.view === 'contacts') h += contactsHtml();
+    h += '</div>';
+    app.innerHTML = h;
+    bindCommon();
+    if (state.view === 'page') bindPage();
+    if (state.view === 'new') bindNew();
+    if (state.view === 'contacts') bindContacts();
+  }
+
+  function loginHtml() {
+    return '<div class="login"><div class="card"><h2 style="margin:0 0 6px;font-size:22px;color:var(--navy)">Редактор сайта</h2>' +
+      '<p style="color:var(--mut);font-size:14px;margin:0 0 18px">Локальный режим. Введите код доступа</p>' +
+      '<div id="lg-err"></div>' +
+      '<input type="password" id="lg-code" autocomplete="off" style="margin-bottom:14px">' +
+      '<button class="btn" id="lg-btn" style="width:100%">Войти</button></div></div>';
+  }
+  function bindLogin() {
+    function tryLogin() {
+      var v = document.getElementById('lg-code').value || '';
+      crypto.subtle.digest('SHA-256', new TextEncoder().encode(v)).then(function (h) {
+        var hex = Array.prototype.map.call(new Uint8Array(h), function (x) { return ('0' + x.toString(16)).slice(-2); }).join('');
+        if (hex === KHASH) { sessionStorage.setItem('kAuth', '1'); state.msg = ''; render(); }
+        else { document.getElementById('lg-err').innerHTML = '<p style="color:#96271b;font-size:13px;margin:0 0 10px">Неверный код</p>'; }
+      });
+    }
+    document.getElementById('lg-btn').addEventListener('click', tryLogin);
+    document.getElementById('lg-code').addEventListener('keydown', function (e) { if (e.key === 'Enter') tryLogin(); });
+    document.getElementById('lg-code').focus();
+  }
+
+  function panelHtml() {
+    var order = jget('pageOrder', []);
+    var act = realPages().concat(virtualPages());
+    act.sort(function (a, b) {
+      var ia = order.indexOf(a.file), ib = order.indexOf(b.file);
+      if (ia === -1) ia = 999;
+      if (ib === -1) ib = 999;
+      return ia - ib;
+    });
+    var rows = act.map(function (p, i) {
+      var dirty = Object.keys(jget('draft', {})[p.file] || {}).length;
+      return '<tr><td>' + esc(p.title) + '<div class="small">' + esc(p.file) + (dirty ? ' · <b style="color:#e67e22">есть черновик</b>' : '') + '</div></td>' +
+        '<td><div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">' +
+        (i > 0 ? '<a class="btn btn2" style="padding:7px 10px;font-size:12.5px" href="#" data-porder="up" data-file="' + esc(p.file) + '" title="Выше в меню">↑</a>' : '') +
+        (i < act.length - 1 ? '<a class="btn btn2" style="padding:7px 10px;font-size:12.5px" href="#" data-porder="down" data-file="' + esc(p.file) + '" title="Ниже в меню">↓</a>' : '') +
+        '<a class="btn btn2" style="padding:7px 14px;font-size:13px" href="#" data-edit="' + esc(p.file) + '">Редактировать</a>' +
+        '<a class="btn btn-red" style="padding:7px 12px;font-size:13px" href="#" data-arch="' + esc(p.file) + '">В архив</a>' +
+        '</div></td></tr>';
+    }).join('');
+    var arch = jget('archived', []);
+    var archRows = arch.map(function (a) {
+      return '<tr><td>' + esc(a.title) + '<div class="small">' + esc(a.file) + '</div></td>' +
+        '<td><div style="display:flex;gap:8px;flex-wrap:wrap">' +
+        '<a class="btn btn2" style="padding:7px 12px;font-size:12.5px" href="#" data-unarch="' + esc(a.file) + '">Восстановить</a>' +
+        '<a class="btn btn-red" style="padding:7px 12px;font-size:12.5px" href="#" data-delarch="' + esc(a.file) + '">Удалить навсегда</a>' +
+        '</div></td></tr>';
+    }).join('');
+    return '<div class="card"><h2>Страницы сайта</h2><p class="hint">Стрелками задайте порядок страниц в меню.</p>' +
+      '<table><tr><th>Страница</th><th></th></tr>' + rows + '</table>' +
+      '<p class="hint">Локальный режим: изменения видны только в этом браузере и подставляются при открытии страниц с диска. «Открыть» запускает страницу в новой вкладке.</p></div>' +
+      (arch.length ? '<div class="card"><h2>Архив</h2><table><tr><th>Страница</th><th></th></tr>' + archRows + '</table>' +
+      '<p class="hint">Страницы в архиве скрыты со всего сайта и недоступны посетителям. Можно восстановить или удалить навсегда.</p></div>' : '');
+  }
+
+  function pageHtml(page) {
+    var slug = page.replace(/\.html$/, '');
+    var isVirt = !!jget('virtual', {})[slug];
+    var title = isVirt ? jget('virtual', {})[slug].title : ((jget('reg', {})[page] || SNAP[page] || {}).title || page);
+    var d = jget('draft', {})[page] || {};
+    var dirty = Object.keys(d).length;
+    var blocks = getBlocks(page).map(function (b, idx) {
+      var badge = b.status === 'new' ? '<span class="badge new">новый</span>' :
+        (b.status === 'draft' ? '<span class="badge">изменён — не опубликовано</span>' : '');
+      var hasSteps = /class="steps/.test(b.val.replace(/^<!--kbg:[a-z]+-->/, ''));
+      return '<div class="blk" id="blk-' + idx + '">' +
+        '<div class="blk-head"><label>' + esc(blockLabel(b.id)) + '</label>' + badge +
+        '<span class="small" style="flex:1;text-align:right">Блок: ' + esc(b.id) + '</span></div>' +
+        '<div class="toolbar">' +
+        '<span class="small" style="margin-right:2px">Подложка:</span>' +
+        '<button type="button" data-frame="' + idx + '" data-kbg="white" title="Белая">Б</button>' +
+        '<button type="button" data-frame="' + idx + '" data-kbg="gray" title="Серая">С</button>' +
+        '<button type="button" data-frame="' + idx + '" data-kbg="dark" title="Тёмная">Т</button>' +
+        (hasSteps ? '<span class="small" style="margin:0 2px 0 10px">Расположение:</span>' +
+        '<button type="button" data-frame="' + idx + '" data-layout="hor">Горизонтально</button>' +
+        '<button type="button" data-frame="' + idx + '" data-layout="ver">Вертикально</button>' : '') +
+        '</div>' +
+        '<div class="toolbar">' +
+        '<button type="button" data-frame="' + idx + '" data-c="bold"><b>Ж</b></button>' +
+        '<button type="button" data-frame="' + idx + '" data-c="italic"><i>К</i></button>' +
+        '<button type="button" data-frame="' + idx + '" data-c="underline"><u>Ч</u></button>' +
+        '<button type="button" data-frame="' + idx + '" data-c="formatBlock" data-v="&lt;h3&gt;">Заголовок</button>' +
+        '<button type="button" data-frame="' + idx + '" data-c="insertUnorderedList">Список</button>' +
+        '<button type="button" data-frame="' + idx + '" data-c="insertOrderedList">Нумерация</button>' +
+        '<button type="button" data-frame="' + idx + '" data-c="link">Ссылка</button>' +
+        '<button type="button" data-frame="' + idx + '" data-c="img">Картинка</button>' +
+        '<button type="button" data-frame="' + idx + '" data-c="removeFormat">Очистить стиль</button>' +
+        '<button type="button" data-frame="' + idx + '" data-c="undo">&larr; Отмена</button></div>' +
+        '<div class="imgpanel" id="imgpanel-' + idx + '" data-mode="center" style="display:none">' +
+        '<span class="small">Положение:</span>' +
+        '<button type="button" data-imgpos="left">Слева с текстом</button>' +
+        '<button type="button" data-imgpos="center">По центру</button>' +
+        '<button type="button" data-imgpos="right">Справа с текстом</button>' +
+        '<button type="button" data-imgpos="full">Во всю ширину</button>' +
+        '<span class="small" style="margin-left:10px">Размер:</span>' +
+        '<input type="range" min="10" max="100" value="50" data-imgw-range style="flex:1;min-width:120px">' +
+        '<input type="number" min="5" max="100" value="50" data-imgw-num style="width:70px;padding:5px 8px;border:1px solid var(--line);border-radius:6px">%' +
+        '<span class="small" style="margin-left:10px">Скругление:</span>' +
+        '<input type="range" min="0" max="50" value="12" data-imgr-range style="width:90px">' +
+        '<button type="button" data-imgwrap title="Переключить обтекание текстом">Обтекание</button>' +
+        '<button type="button" data-imgdel>Убрать картинку</button>' +
+        '</div>' +
+        '<iframe class="bframe" id="fr-' + idx + '" data-bid="' + esc(b.id) + '" data-idx="' + idx + '"></iframe>' +
+        '<div class="brow">' +
+        '<button type="button" class="btn" data-pub>Опубликовать</button>' +
+        (b.secIndex !== undefined || b.id.indexOf('block-') === 0 ?
+          '<button type="button" class="btn btn2" data-mv="up" data-bid="' + esc(b.id) + '" data-idx="' + idx + '" title="Переместить выше">&uarr; Выше</button>' +
+          '<button type="button" class="btn btn2" data-mv="down" data-bid="' + esc(b.id) + '" data-idx="' + idx + '" title="Переместить ниже">&darr; Ниже</button>' : '') +
+        (b.id.indexOf('block-') === 0 || b.secIndex !== undefined ? '<button type="button" class="btn btn-red" data-delblk="' + esc(b.id) + '">Удалить блок</button>' : '') +
+        '</div></div>';
+    }).join('');
+    var actions = '<div class="card"><h2>Страница: ' + esc(title) + '</h2>' +
+      '<div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">' +
+      '<button type="button" class="btn" id="btn-preview">Предпросмотр</button>' +
+      '<button type="button" class="btn" id="btn-publish"' + (dirty ? '' : ' disabled') + '>Опубликовать' + (dirty ? ' (' + dirty + ')' : '') + '</button>' +
+      (dirty ? '<button type="button" class="btn btn2" id="btn-discard">Сбросить черновик</button>' : '') +
+      (isVirt ? '<button type="button" class="btn btn-red" id="btn-del-page">Удалить страницу</button>' : '<button type="button" class="btn btn2" id="btn-reset-page">Вернуть оригинал страницы</button>') +
+      '</div><p class="hint">Правки сохраняются в черновик автоматически и сразу видны в блоках ниже. «Предпросмотр» откроет страницу так, как её увидит посетитель (сверху будет плашка). «Опубликовать» сделает правки постоянными.</p></div>';
+    var add = '<div class="card" style="text-align:center"><button type="button" class="btn" id="btn-add">+ Добавить блок</button>' +
+      '<p class="hint">Выберите готовый блок: текст, карточки, цифры, этапы и другие — потом отредактируете его прямо как на сайте.</p></div>';
+    return '<a class="back" href="#" id="back-panel">&larr; Все страницы</a>' + actions +
+      '<div class="card"><h2>Содержимое страницы</h2><p class="hint">Каждый блок ниже выглядит ровно как на сайте. Текст правится прямо в блоке — сохранение в черновик происходит автоматически.</p></div>' + blocks + add;
+  }
+
+  function contactsHtml() {
+    var c = jget('contacts', {
+      address: '119590 г. Москва, ул. Минская, д.1Г, корп.1, офис 14',
+      email: 'info@techmasla.ru',
+      site: 'techmasla.ru',
+      phones: [
+        { tel: '+74959732044', label: '+7 (495) 973-20-44', note: 'департамент продаж' },
+        { tel: '+79153502331', label: '+7 (915) 350-23-31', note: 'департамент продаж' },
+        { tel: '+79252474883', label: '+7 (925) 247-48-83', note: 'менеджер по продажам' }
+      ],
+      extra: ''
+    });
+    var phones = c.phones.map(function (p, i) {
+      return '<div class="row" style="display:flex;gap:8px">' +
+        '<input type="text" data-ph-label="' + i + '" value="' + esc(p.label) + '" placeholder="+7 (___) ___-__-__" style="flex:2">' +
+        '<input type="text" data-ph-note="' + i + '" value="' + esc(p.note) + '" placeholder="подпись" style="flex:2">' +
+        '<input type="hidden" data-ph-tel="' + i + '" value="' + esc(p.tel) + '">' +
+        '<button type="button" class="btn btn-red" data-ph-del="' + i + '" style="padding:8px 12px">✕</button></div>';
+    }).join('');
+    return '<a class="back" href="#" id="back-panel">&larr; Все страницы</a>' +
+      '<div class="card"><h2>Контакты и подвал сайта</h2>' +
+      '<p class="hint">Изменения применяются ко всем страницам сайта сразу.</p>' +
+      '<div class="row"><label>Адрес офиса</label><input type="text" id="ct-addr" value="' + esc(c.address) + '"></div>' +
+      '<div class="row"><label>Телефоны</label><div id="ct-phones">' + phones + '</div>' +
+      '<button type="button" class="btn btn2" id="ct-addph" style="margin-top:8px">+ Добавить телефон</button></div>' +
+      '<div class="row"><label>Электронная почта</label><input type="text" id="ct-email" value="' + esc(c.email) + '"></div>' +
+      '<div class="row"><label>Сайт</label><input type="text" id="ct-site" value="' + esc(c.site) + '"></div>' +
+      '<div class="row"><label>Дополнительная строка в подвале (Telegram, WhatsApp и т.п.; необязательно)</label>' +
+      '<input type="text" id="ct-extra" value="' + esc(c.extra || '') + '" placeholder="Например: Telegram: @techmasla"></div>' +
+      '<div class="brow"><button type="button" class="btn" id="ct-save">Сохранить контакты</button></div></div>';
+  }
+
+  function bindContacts() {
+    function readPhones() {
+      var out = [];
+      document.querySelectorAll('[data-ph-label]').forEach(function (inp) {
+        var i = inp.getAttribute('data-ph-label');
+        out.push({
+          label: inp.value.trim(),
+          note: (document.querySelector('[data-ph-note="' + i + '"]') || { value: '' }).value || '',
+          tel: (document.querySelector('[data-ph-tel="' + i + '"]') || { value: '' }).value || inp.value.trim()
+        });
+      });
+      return out;
+    }
+    var add = document.getElementById('ct-addph');
+    if (add) add.addEventListener('click', function () {
+      var div = document.createElement('div');
+      div.className = 'row';
+      div.style.cssText = 'display:flex;gap:8px';
+      var i = document.querySelectorAll('[data-ph-label]').length;
+      div.innerHTML = '<input type="text" data-ph-label="' + i + '" placeholder="+7 (___) ___-__-__" style="flex:2">' +
+        '<input type="text" data-ph-note="' + i + '" placeholder="подпись" style="flex:2">' +
+        '<input type="hidden" data-ph-tel="' + i + '">' +
+        '<button type="button" class="btn btn-red" data-ph-del="' + i + '" style="padding:8px 12px">✕</button>';
+      document.getElementById('ct-phones').appendChild(div);
+      bindDel();
+    });
+    function bindDel() {
+      document.querySelectorAll('[data-ph-del]').forEach(function (b) {
+        b.onclick = function () { b.parentNode.remove(); };
+      });
+    }
+    bindDel();
+    document.getElementById('ct-save').addEventListener('click', function () {
+      var phones = readPhones().filter(function (p) { return p.label !== ''; });
+      jset('contacts', {
+        address: document.getElementById('ct-addr').value.trim(),
+        email: document.getElementById('ct-email').value.trim(),
+        site: document.getElementById('ct-site').value.trim(),
+        phones: phones,
+        extra: document.getElementById('ct-extra').value.trim()
+      });
+      state.msg = 'Контакты сохранены — применились ко всем страницам.';
+      render();
+    });
+  }
+
+  function newHtml() {
+    var tiles = TEMPLATES.map(function (t) {
+      return '<div class="ptile" data-tpl="' + t.id + '">' +
+        '<iframe class="tpl-prev" srcdoc="' + esc(tplPreviewDoc(t)) + '"></iframe>' +
+        '<div class="pt-name">' + esc(t.name) + '</div><div class="pt-desc">' + esc(t.desc) + '</div>' +
+        '<div style="display:flex;gap:6px;margin-top:8px">' +
+        '<button type="button" class="btn btn2" style="padding:6px 10px;font-size:12.5px" data-see="' + t.id + '">Посмотреть</button>' +
+        '<button type="button" class="btn" style="padding:6px 10px;font-size:12.5px" data-use="' + t.id + '">Выбрать</button>' +
+        '</div></div>';
+    }).join('');
+    return '<a class="back" href="#" id="back-panel">&larr; Все страницы</a>' +
+      '<div class="card"><h2>Новая страница — выберите шаблон</h2>' +
+      '<p class="hint">Шаблон — заготовка целой страницы: секции с текстами, цифрами, списками и специальными элементами. После создания всё можно менять: тексты, подложки, порядок секций, добавлять и удалять блоки. «Посмотреть» — как шаблон выглядит целиком. Можно начать и с пустой страницы.</p>' +
+      '<div class="row"><label>Заголовок страницы (H1 и название в меню)</label><input type="text" id="np-title" maxlength="80" placeholder="Например: Аренда спецтехники"></div>' +
+      '<div class="row"><label>Адрес страницы (латиницей, через дефис)</label><input type="text" id="np-slug" maxlength="50" placeholder="arenda-spectechniki"></div>' +
+      '<div class="row"><label>Шаблон</label>' +
+      '<input type="hidden" id="np-tpl" value="">' +
+      '<div class="pickgrid" id="tpl-grid">' +
+      '<div class="ptile" data-tpl="none"><div class="tpl-prev" style="display:flex;align-items:center;justify-content:center;color:var(--mut);font-size:13px">Пустая страница<br>только заголовок и текст</div><div class="pt-name">Без шаблона</div><div class="pt-desc">Чистый лист — всё добавите блоками</div></div>' +
+      tiles + '</div>' +
+      '<p class="hint">Шаблоны можно совмещать: после создания добавляйте блоки из библиотеки и ещё шаблонные секции.</p>' +
+      '<button type="button" class="btn" id="np-btn">Создать страницу</button></div>';
+  }
+
+  function tplPreviewDoc(t) {
+    var menu = REAL.concat(virtualPages()).map(function (p) { return '<li><a href="#" onclick="return false">' + esc(p.title) + '</a></li>'; }).join('');
+    var sections = t.sections.map(function (s) {
+      var cls = 'section' + (s.kbg === 'gray' ? ' section-alt' : '') + (s.kbg === 'dark' || s.kbg === 'hero' ? ' section-dark' : '');
+      return '<section class="' + cls + '"><div class="container">' + s.html + '</div></section>';
+    }).join('');
+    return '<!DOCTYPE html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">' +
+      '<link rel="stylesheet" href="style.css"><style>body{margin:0}</style></head><body>' + SPRITE +
+      '<div style="background:#0e2438;color:#fff;font:600 12px Arial,sans-serif;padding:7px 12px;text-align:center">Предпросмотр шаблона «' + esc(t.name) + '» — тексты можно менять после создания</div>' +
+      '<header class="site-header"><div class="container header-in">' +
+      '<a class="brand" href="#" onclick="return false"><svg class="brand-logo" viewBox="0 0 40 40"><rect width="40" height="40" rx="8" fill="#1f6fce"/><path d="M20 8l8.5 8.5a12 12 0 1 1-17 0z" fill="none" stroke="#fff" stroke-width="2.4"/></svg>' +
+      '<span class="brand-name">ООО "Индустриальные<br>ТехМасла" <small>techmasla.ru</small></span></a></div></header>' +
+      '<main><section class="page-hero"><div class="container"><p class="hero-kicker">Предпросмотр · techmasla.ru</p><h1>' + esc(t.name) + '</h1><div class="hero-lead">' + t.lead + '</div></div></section>' + sections +
+      '</main></body></html>';
+  }
+
+  function openTplPreview(tplId) {
+    var t = TEMPLATES.find(function (x) { return x.id === tplId; });
+    var back = document.createElement('div');
+    back.className = 'pickback';
+    back.innerHTML = '<div class="pickbox" style="max-width:1100px">' +
+      '<h2>Шаблон «' + esc(t.name) + '» <span class="badge">предпросмотр</span></h2>' +
+      '<div style="display:flex;gap:8px;margin:0 0 10px;flex-wrap:wrap">' +
+      '<button type="button" class="btn btn2" data-dev="100%">Ноутбук</button>' +
+      '<button type="button" class="btn btn2" data-dev="768px">Планшет</button>' +
+      '<button type="button" class="btn btn2" data-dev="375px">Телефон</button>' +
+      '<span style="flex:1"></span>' +
+      '<button type="button" class="btn" id="pv-use">Выбрать этот шаблон</button>' +
+      '<button type="button" class="btn btn2" id="pv-close">Закрыть</button></div>' +
+      '<iframe id="pv-frame" style="width:100%;height:70vh;border:1px solid var(--line);border-radius:8px;background:#fff;display:block"></iframe></div>';
+    document.body.appendChild(back);
+    var f = back.querySelector('#pv-frame');
+    f.srcdoc = tplPreviewDoc(t);
+    back.querySelectorAll('[data-dev]').forEach(function (b) {
+      b.addEventListener('click', function () {
+        f.style.width = b.getAttribute('data-dev');
+        f.style.margin = '0 auto';
+        setTimeout(function () { try { f.style.height = Math.max(400, f.contentDocument.body.scrollHeight) + 'px'; } catch (e) {} }, 150);
+      });
+    });
+    setTimeout(function () { try { f.style.height = Math.max(400, f.contentDocument.body.scrollHeight) + 'px'; } catch (e) {} }, 300);
+    back.querySelector('#pv-close').addEventListener('click', function () { back.remove(); });
+    back.addEventListener('click', function (e) { if (e.target === back) back.remove(); });
+    back.querySelector('#pv-use').addEventListener('click', function () {
+      back.remove();
+      document.getElementById('np-tpl').value = tplId;
+      document.querySelectorAll('#tpl-grid .ptile').forEach(function (x) { x.style.outline = x.getAttribute('data-tpl') === tplId ? '3px solid var(--acc)' : ''; });
+      state.msg = 'Шаблон «' + t.name + '» выбран — нажмите «Создать страницу».';
+      var m = document.querySelector('.msg');
+      if (m) m.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    });
+  }
+
+  function pageOrderMove(file, dir) {
+    var act = realPages().concat(virtualPages()).map(function (p) { return p.file; });
+    var order = jget('pageOrder', []);
+    act.forEach(function (f) { if (order.indexOf(f) < 0) order.push(f); });
+    var i = order.indexOf(file);
+    if (i < 0) return;
+    var j = dir === 'up' ? i - 1 : i + 1;
+    if (j < 0 || j >= order.length) return;
+    var t = order[i]; order[i] = order[j]; order[j] = t;
+    jset('pageOrder', order);
+    state.msg = 'Порядок страниц обновлён — он виден в меню сайта.';
+    render();
+  }
+
+  function bindCommon() {
+    var np = document.getElementById('nav-panel');
+    if (np) np.addEventListener('click', function (e) { e.preventDefault(); state.view = 'panel'; state.page = null; render(); });
+    var nn = document.getElementById('nav-new');
+    if (nn) nn.addEventListener('click', function (e) { e.preventDefault(); state.view = 'new'; state.page = null; render(); });
+    var nc = document.getElementById('nav-contacts');
+    if (nc) nc.addEventListener('click', function (e) { e.preventDefault(); state.view = 'contacts'; state.page = null; render(); });
+    var nr = document.getElementById('nav-reset');
+    if (nr) nr.addEventListener('click', function (e) {
+      e.preventDefault();
+      if (!confirm('Сбросить ВСЕ локальные правки (тексты, добавленные и скрытые страницы)?')) return;
+      ['ovr', 'draft', 'virtual', 'deleted', 'reg'].forEach(function (k) { localStorage.removeItem(P + k); });
+      state.msg = 'Все локальные правки сброшены.';
+      render();
+    });
+    var ne = document.getElementById('nav-exit');
+    if (ne) ne.addEventListener('click', function (e) { e.preventDefault(); sessionStorage.removeItem('kAuth'); state.msg = ''; render(); });
+    var bp = document.getElementById('back-panel');
+    if (bp) bp.addEventListener('click', function (e) { e.preventDefault(); state.view = 'panel'; state.page = null; render(); });
+
+    document.querySelectorAll('[data-open]').forEach(function (a) {
+      a.addEventListener('click', function (e) { e.preventDefault(); openPage(a.getAttribute('data-open')); });
+    });
+    document.querySelectorAll('[data-edit]').forEach(function (a) {
+      a.addEventListener('click', function (e) { e.preventDefault(); state.view = 'page'; state.page = a.getAttribute('data-edit'); render(); });
+    });
+    document.querySelectorAll('[data-del]').forEach(function (a) {
+      a.addEventListener('click', function (e) {
+        e.preventDefault();
+        var file = a.getAttribute('data-del');
+        if (!confirm('Удалить страницу ' + file + '?')) return;
+        var reg = jget('reg', {}), virt = jget('virtual', {}), ovr = jget('ovr', {}), draft = jget('draft', {});
+        delete virt[file.replace(/\.html$/, '')];
+        delete reg[file]; delete ovr[file]; delete draft[file];
+        jset('virtual', virt);
+        jset('reg', reg); jset('ovr', ovr); jset('draft', draft);
+        state.msg = 'Страница удалена.';
+        render();
+      });
+    });
+
+    document.querySelectorAll('[data-arch]').forEach(function (a) {
+      a.addEventListener('click', function (e) {
+        e.preventDefault();
+        var file = a.getAttribute('data-arch');
+        if (!confirm('Отправить страницу ' + file + ' в архив? Она пропадёт со всего сайта, но её можно будет восстановить.')) return;
+        var arch = jget('archived', []);
+        var del = jget('deleted', []);
+        var title = file;
+        realPages().concat(virtualPages()).forEach(function (p) { if (p.file === file) title = p.title; });
+        if (arch.filter(function (x) { return x.file === file; }).length === 0) arch.push({ file: file, title: title });
+        jset('archived', arch);
+        if (del.indexOf(file) === -1) del.push(file);
+        jset('deleted', del);
+        if (state.page === file) { state.page = null; state.view = 'panel'; }
+        state.msg = 'Страница в архиве — скрыта со всего сайта.';
+        render();
+      });
+    });
+    document.querySelectorAll('[data-unarch]').forEach(function (a) {
+      a.addEventListener('click', function (e) {
+        e.preventDefault();
+        var file = a.getAttribute('data-unarch');
+        var arch = jget('archived', []).filter(function (x) { return x.file !== file; });
+        var del = jget('deleted', []).filter(function (x) { return x !== file; });
+        jset('archived', arch);
+        jset('deleted', del);
+        state.msg = 'Страница восстановлена из архива.';
+        render();
+      });
+    });
+    document.querySelectorAll('[data-delarch]').forEach(function (a) {
+      a.addEventListener('click', function (e) {
+        e.preventDefault();
+        var file = a.getAttribute('data-delarch');
+        if (!confirm('Удалить страницу из архива НАВСЕГДА? Восстановить её будет нельзя.')) return;
+        var arch = jget('archived', []).filter(function (x) { return x.file !== file; });
+        var reg = jget('reg', {}), virt = jget('virtual', {}), ovr = jget('ovr', {}), draft = jget('draft', {}), del = jget('deleted', []);
+        delete virt[file.replace(/\.html$/, '')];
+        delete reg[file]; delete ovr[file]; delete draft[file];
+        var del2 = del.filter(function (x) { return x !== file; });
+        jset('archived', arch); jset('virtual', virt); jset('reg', reg); jset('ovr', ovr); jset('draft', draft); jset('deleted', del2);
+        state.msg = 'Страница удалена навсегда.';
+        render();
+      });
+    });
+    document.querySelectorAll('[data-porder]').forEach(function (a) {
+      a.addEventListener('click', function (e) {
+        e.preventDefault();
+        pageOrderMove(a.getAttribute('data-file'), a.getAttribute('data-porder'));
+      });
+    });
+  }
+
+  function fit(f) {
+    try {
+      var d = f.contentDocument;
+      if (d && d.body) f.style.height = Math.max(120, d.body.scrollHeight) + 'px';
+    } catch (e) {}
+  }
+
+  function bindPage() {
+    var page = state.page;
+    var slug = page.replace(/\.html$/, '');
+    var isVirt = !!jget('virtual', {})[slug];
+    var curImg = null;
+
+    function showImgPanel(idx, img) {
+      curImg = { frame: idx, img: img };
+      document.querySelectorAll('.imgpanel').forEach(function (p) { p.style.display = 'none'; });
+      var panel = document.getElementById('imgpanel-' + idx);
+      panel.style.display = 'flex';
+      var w = parseInt(img.style.width, 10);
+      if (isNaN(w)) w = 50;
+      panel.querySelector('[data-imgw-range]').value = w;
+      panel.querySelector('[data-imgw-num]').value = w;
+    }
+
+    function wireFrame(f, b, idx) {
+      var tryWire = function () {
+        var doc = f.contentDocument;
+        var cont = doc && doc.querySelector('.container');
+        if (!cont) { setTimeout(tryWire, 60); return; }
+        if (doc.__kwired) return;
+        doc.__kwired = true;
+        cont.addEventListener('input', function () {
+          var draft = jget('draft', {});
+          draft[page] = draft[page] || {};
+          draft[page][b.id] = kbgPrefix(b.kbg) + cont.innerHTML;
+          jset('draft', draft);
+          updateDirty();
+          fit(f);
+        });
+        cont.addEventListener('paste', function (e) {
+          e.preventDefault();
+          var t = e.clipboardData ? e.clipboardData.getData('text/plain') : '';
+          if (!t) return;
+          t = t.replace(/\r/g, '');
+          var parts = t.split(/\n{2,}/).filter(function (s) { return s.trim() !== ''; });
+          var html = parts.map(function (s) {
+            var x = s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            return '<p>' + x.replace(/\n/g, '<br>') + '</p>';
+          }).join('');
+          doc.execCommand('insertHTML', false, html);
+          cont.dispatchEvent(new Event('input', { bubbles: true }));
+        });
+        doc.addEventListener('focusin', function () { frames[idx] = f; });
+        doc.addEventListener('click', function (e) {
+          var img = e.target && e.target.closest && e.target.closest('img');
+          if (img) { showImgPanel(idx, img); }
+        });
+        doc.addEventListener('dragstart', function (e) {
+          var img = e.target && e.target.closest && e.target.closest('img');
+          if (!img) return;
+          window.__kdrag = img;
+          try {
+            e.dataTransfer.setData('text/plain', 'k-img');
+            e.dataTransfer.effectAllowed = 'move';
+          } catch (err) {}
+        });
+        doc.addEventListener('dragover', function (e) {
+          if (window.__kdrag) e.preventDefault();
+        });
+        doc.addEventListener('drop', function (e) {
+          if (!window.__kdrag) return;
+          e.preventDefault();
+          var img = window.__kdrag;
+          window.__kdrag = null;
+          var range = null;
+          if (doc.caretRangeFromPoint) range = doc.caretRangeFromPoint(e.clientX, e.clientY);
+          else if (doc.caretPositionFromPoint) {
+            var p = doc.caretPositionFromPoint(e.clientX, e.clientY);
+            range = doc.createRange();
+            range.setStart(p.offsetNode, p.offset);
+          }
+          if (range) {
+            range.insertNode(img);
+            cont.dispatchEvent(new Event('input', { bubbles: true }));
+            fit(f);
+          }
+        });
+        fit(f);
+      };
+      f.addEventListener('load', function () { setTimeout(tryWire, 30); });
+      tryWire();
+    }
+
+    var blocks = getBlocks(page);
+    blocks.forEach(function (b, idx) {
+      var f = document.getElementById('fr-' + idx);
+      f.srcdoc = frameSrc(b.val, b.kbg, true);
+      wireFrame(f, b, idx);
+    });
+
+    document.querySelectorAll('[data-kbg]').forEach(function (b) {
+      b.addEventListener('click', function (e) {
+        e.preventDefault();
+        var idx = b.getAttribute('data-frame');
+        var kbg = b.getAttribute('data-kbg');
+        var f = document.getElementById('fr-' + idx);
+        var cont = f.contentDocument && f.contentDocument.querySelector('.container');
+        if (!cont) return;
+        var draft = jget('draft', {});
+        draft[page] = draft[page] || {};
+        draft[page][blocks[idx].id] = kbgPrefix(kbg) + cont.innerHTML;
+        blocks[idx].kbg = kbg;
+        jset('draft', draft);
+        f.srcdoc = frameSrc(cont.innerHTML, kbg, true);
+      });
+    });
+
+    document.querySelectorAll('[data-layout]').forEach(function (b) {
+      b.addEventListener('click', function (e) {
+        e.preventDefault();
+        var idx = b.getAttribute('data-frame');
+        var f = document.getElementById('fr-' + idx);
+        var doc = f.contentDocument;
+        var st = doc.querySelector('.steps');
+        if (!st) return;
+        if (b.getAttribute('data-layout') === 'ver') st.classList.add('stacked');
+        else st.classList.remove('stacked');
+        doc.querySelector('.container').dispatchEvent(new Event('input', { bubbles: true }));
+      });
+    });
+
+    document.querySelectorAll('.imgpanel').forEach(function (panel) {
+      var idx = panel.id.replace('imgpanel-', '');
+      function apply() {
+        if (!curImg || String(curImg.frame) !== String(idx)) return;
+        var w = parseInt(panel.querySelector('[data-imgw-range]').value, 10);
+        panel.querySelector('[data-imgw-num]').value = w;
+        var mode = panel.getAttribute('data-mode') || 'center';
+        applyImgStyle(curImg.img, mode, w);
+        var f = document.getElementById('fr-' + idx);
+        f.contentDocument.querySelector('.container').dispatchEvent(new Event('input', { bubbles: true }));
+        fit(f);
+      }
+      panel.querySelectorAll('[data-imgpos]').forEach(function (b) {
+        b.addEventListener('click', function () {
+          panel.setAttribute('data-mode', b.getAttribute('data-imgpos'));
+          apply();
+        });
+      });
+      panel.querySelector('[data-imgw-range]').addEventListener('input', function () {
+        panel.querySelector('[data-imgw-num]').value = this.value;
+        apply();
+      });
+      panel.querySelector('[data-imgw-num]').addEventListener('input', function () {
+        var v = parseInt(this.value, 10);
+        if (!isNaN(v) && v >= 5 && v <= 100) {
+          panel.querySelector('[data-imgw-range]').value = v;
+          apply();
+        }
+      });
+      panel.querySelector('[data-imgr-range]').addEventListener('input', function () {
+        if (!curImg || String(curImg.frame) !== String(idx)) return;
+        curImg.img.style.borderRadius = this.value + 'px';
+        var f = document.getElementById('fr-' + idx);
+        f.contentDocument.querySelector('.container').dispatchEvent(new Event('input', { bubbles: true }));
+      });
+      panel.querySelector('[data-imgwrap]').addEventListener('click', function () {
+        if (!curImg || String(curImg.frame) !== String(idx)) return;
+        var mode = panel.getAttribute('data-mode') || 'center';
+        var w = parseInt(panel.querySelector('[data-imgw-range]').value, 10);
+        var newMode = (mode === 'left') ? 'center' : 'left';
+        if (mode === 'right') newMode = 'right';
+        if (mode === 'center') newMode = 'left';
+        panel.setAttribute('data-mode', newMode);
+        applyImgStyle(curImg.img, newMode, w);
+        var f = document.getElementById('fr-' + idx);
+        f.contentDocument.querySelector('.container').dispatchEvent(new Event('input', { bubbles: true }));
+      });
+    });
+
+    document.querySelectorAll('[data-frame]').forEach(function (b) {
+      b.addEventListener('click', function (e) {
+        e.preventDefault();
+        var idx = b.getAttribute('data-frame');
+        var f = frames[idx] || document.getElementById('fr-' + idx);
+        var doc = f.contentDocument;
+        var cont = doc.querySelector('.container');
+        if (!cont) return;
+        var _sel = doc.getSelection();
+        if (_sel.isCollapsed || _sel.rangeCount === 0) cont.focus();
+        var c = b.getAttribute('data-c');
+        if (c === 'link') {
+          var u = prompt('Ссылка (URL):', 'https://');
+          if (u && u !== 'https://') doc.execCommand('createLink', false, u);
+        } else if (c === 'img') {
+          pickImage(function (dataUrl) {
+            doc.execCommand('insertImage', false, dataUrl);
+            cont.querySelectorAll('img').forEach(function (im) { if (!im.getAttribute('loading')) im.setAttribute('loading', 'lazy'); });
+            cont.dispatchEvent(new Event('input', { bubbles: true }));
+            var imgs = cont.querySelectorAll('img');
+            if (imgs.length) showImgPanel(idx, imgs[imgs.length - 1]);
+          });
+        } else {
+          doc.execCommand(c, false, b.getAttribute('data-v') || null);
+        }
+        cont.dispatchEvent(new Event('input', { bubbles: true }));
+      });
+    });
+
+    function updateDirty() {
+      var d = Object.keys(jget('draft', {})[page] || {}).length;
+      var btn = document.getElementById('btn-publish');
+      if (btn) { btn.disabled = d === 0; btn.textContent = 'Опубликовать' + (d ? ' (' + d + ')' : ''); }
+      var ds = document.getElementById('btn-discard');
+      if (ds) ds.style.display = d ? '' : 'none';
+    }
+    updateDirty();
+
+    var prev = document.getElementById('btn-preview');
+    if (prev) prev.addEventListener('click', function () {
+      openPreview();
+    });
+    var pub = document.getElementById('btn-publish');
+    if (pub) pub.addEventListener('click', function () {
+      var ovr = jget('ovr', {}), draft = jget('draft', {});
+      ovr[page] = Object.assign({}, ovr[page] || {}, draft[page] || {});
+      delete draft[page];
+      jset('ovr', ovr); jset('draft', draft);
+      try { if (sessionStorage.getItem('km.prev') === page) sessionStorage.removeItem('km.prev'); } catch (e) {}
+      state.msg = 'Опубликовано — правки стали постоянными (в этом браузере).';
+      render();
+    });
+    var disc = document.getElementById('btn-discard');
+    if (disc) disc.addEventListener('click', function () {
+      if (!confirm('Сбросить черновик? Неопубликованные правки будут потеряны.')) return;
+      var draft = jget('draft', {});
+      delete draft[page];
+      jset('draft', draft);
+      state.msg = 'Черновик сброшен.';
+      render();
+    });
+    var rp = document.getElementById('btn-reset-page');
+    if (rp) rp.addEventListener('click', function () {
+      if (!confirm('Вернуть оригинальный текст этой страницы? Опубликованные правки тоже будут отменены.')) return;
+      var ovr = jget('ovr', {}), draft = jget('draft', {});
+      delete ovr[page]; delete draft[page];
+      jset('ovr', ovr); jset('draft', draft);
+      state.msg = 'Текст страницы возвращён к оригиналу.';
+      render();
+    });
+    var dp = document.getElementById('btn-del-page');
+    if (dp) dp.addEventListener('click', function () {
+      if (!confirm('Удалить эту страницу?')) return;
+      var virt = jget('virtual', {});
+      delete virt[slug];
+      jset('virtual', virt);
+      state.page = null; state.view = 'panel';
+      state.msg = 'Страница удалена.'; render();
+    });
+    var ab = document.getElementById('btn-add');
+    if (ab) ab.addEventListener('click', function () { openPicker(); });
+
+    document.querySelectorAll('[data-delblk]').forEach(function (b) {
+      b.addEventListener('click', function () {
+        if (!confirm('Удалить этот блок?')) return;
+        var id = b.getAttribute('data-delblk');
+        var ovr = jget('ovr', {}), draft = jget('draft', {});
+        if (ovr[page]) delete ovr[page][id];
+        if (draft[page]) delete draft[page][id];
+        jset('ovr', ovr); jset('draft', draft);
+        var slug = page.replace(/\.html$/, '');
+        var all = jget('virtual', {});
+        if (all[slug] && all[slug].sections) {
+          all[slug].sections = all[slug].sections.filter(function (s) { return s.id !== id; });
+          jset('virtual', all);
+        }
+        state.msg = 'Блок удалён.'; render();
+      });
+    });
+
+    document.querySelectorAll('[data-mv]').forEach(function (b) {
+      b.addEventListener('click', function () {
+        var dir = b.getAttribute('data-mv');
+        var id = b.getAttribute('data-bid');
+        var blocks = getBlocks(page);
+        var movable = blocks.filter(function (x) { return x.secIndex !== undefined || /^block-/.test(x.id); });
+        var i = -1;
+        for (var q = 0; q < movable.length; q++) if (movable[q].id === id) { i = q; break; }
+        if (i < 0) return;
+        if (dir === 'up' && i === 0) return;
+        if (dir === 'down' && i === movable.length - 1) return;
+        var other = movable[dir === 'up' ? i - 1 : i + 1];
+        var a = movable[i], o = other;
+        if (a.secIndex !== undefined && o.secIndex !== undefined) {
+          var all = jget('virtual', {});
+          var arr = all[page.replace(/\.html$/, '')].sections;
+          var ai = arr.findIndex(function (s) { return s.id === a.id; });
+          var oi = arr.findIndex(function (s) { return s.id === o.id; });
+          if (ai < 0 || oi < 0) return;
+          var tmp = arr[ai]; arr[ai] = arr[oi]; arr[oi] = tmp;
+          jset('virtual', all);
+        } else if (a.id.indexOf('block-') === 0 && o.id.indexOf('block-') === 0) {
+          var order = jget('order', {})[page] || movable.map(function (x) { return x.id; }).filter(function (x) { return x.indexOf('block-') === 0; });
+          var ia = order.indexOf(a.id), io = order.indexOf(o.id);
+          if (ia < 0 || io < 0) return;
+          order[ia] = o.id; order[io] = a.id;
+          var all = jget('order', {}); all[page] = order; jset('order', all);
+        } else { return; }
+        state.msg = 'Блок перемещён.'; render();
+      });
+    });
+  }
+
+  function pickImage(cb) {
+    var fi = document.getElementById('k-imgfile') || (function () {
+      var i = document.createElement('input');
+      i.type = 'file'; i.id = 'k-imgfile'; i.accept = 'image/*'; i.style.display = 'none';
+      document.body.appendChild(i); return i;
+    })();
+    fi.onchange = function () {
+      var file = fi.files && fi.files[0];
+      if (!file) return;
+      compressImage(file, 1400, 0.82).then(function (dataUrl) {
+        cb(dataUrl);
+        fi.value = '';
+      }).catch(function () {
+        var fr = new FileReader();
+        fr.onload = function () { cb(fr.result); fi.value = ''; };
+        fr.readAsDataURL(file);
+      });
+    };
+    fi.click();
+  }
+
+  function compressImage(file, maxSide, quality) {
+    return new Promise(function (resolve, reject) {
+      var img = new Image();
+      var url = URL.createObjectURL(file);
+      img.onload = function () {
+        URL.revokeObjectURL(url);
+        var w = img.width, h = img.height;
+        var scale = Math.min(1, maxSide / Math.max(w, h));
+        var c = document.createElement('canvas');
+        c.width = Math.round(w * scale);
+        c.height = Math.round(h * scale);
+        c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+        var out = c.toDataURL('image/jpeg', quality);
+        if (out.length > 900000) {
+          c2 = document.createElement('canvas');
+          c2.width = Math.round(c.width * 0.7);
+          c2.height = Math.round(c.height * 0.7);
+          c2.getContext('2d').drawImage(img, 0, 0, c2.width, c2.height);
+          out = c2.toDataURL('image/jpeg', 0.72);
+        }
+        resolve(out);
+      };
+      img.onerror = reject;
+      img.src = url;
+    });
+  }
+
+  function openPicker() {
+    var back = document.createElement('div');
+    back.className = 'pickback';
+    back.innerHTML = '<div class="pickbox" style="max-width:1000px"><h2>Добавить на страницу</h2>' +
+      '<p class="hint" style="margin:0 0 12px">Выберите блок или целый шаблон — он добавится в конец страницы. Потом можно редактировать, перемещать и удалять.</p>' +
+      '<div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap">' +
+      '<button type="button" class="btn" data-tab="blocks">Блоки</button>' +
+      '<button type="button" class="btn btn2" data-tab="tmpls">Шаблоны (секции)</button></div>' +
+      '<div class="pickgrid" id="pick-grid"></div>' +
+      '<div class="brow" style="margin-top:14px"><button type="button" class="btn btn2" id="pick-close">Отмена</button></div></div>';
+    document.body.appendChild(back);
+    var grid = back.querySelector('#pick-grid');
+    function fillBlocks() {
+      grid.innerHTML = '';
+      SKELETONS.forEach(function (s) {
+        var t = document.createElement('div');
+        t.className = 'ptile';
+        t.innerHTML = '<iframe srcdoc="' + esc(frameSrc(s.html, s.alt)) + '"></iframe>' +
+          '<div class="pt-name">' + esc(s.name) + '</div><div class="pt-desc">' + esc(s.desc) + '</div>';
+        t.addEventListener('click', function () {
+          insertDraftBlock(s.id, s.html, s.alt);
+          back.remove();
+        });
+        grid.appendChild(t);
+      });
+      wireTiles();
+    }
+    function fillTmpls() {
+      grid.innerHTML = '';
+      TEMPLATES.forEach(function (t) {
+        var t2 = document.createElement('div');
+        t2.className = 'ptile';
+        var inner = t.sections.map(function (s) {
+          var cls = 'section' + (s.kbg === 'gray' ? ' section-alt' : '') + ((s.kbg === 'dark' || s.kbg === 'hero') ? ' section-dark' : '');
+          return '<section class="' + cls + '"><div class="container" style="padding:14px 18px">' + (s.kbg === 'hero' ? stripKbg(s.html) : s.html) + '</div></section>';
+        }).join('');
+        t2.innerHTML = '<iframe srcdoc="' + esc('<!DOCTYPE html><html><head><meta charset="utf-8"><link rel="stylesheet" href="style.css"><style>body{margin:0;background:#f4f6f8}</style></head><body>' + inner + '</body></html>') + '"></iframe>' +
+          '<div class="pt-name">Шаблон: ' + esc(t.name) + '</div><div class="pt-desc">Добавит ' + t.sections.length + ' секций (без бункера)</div>';
+        t2.addEventListener('click', function () {
+          var page = state.page;
+          var draft = jget('draft', {});
+          draft[page] = draft[page] || {};
+          var ts = Date.now();
+          t.sections.forEach(function (s, i) {
+            draft[page]['block-' + ts + '-' + i] = kbgPrefix(s.kbg === 'hero' ? 'dark' : s.kbg) + s.html;
+          });
+          jset('draft', draft);
+          state.msg = 'Секции шаблона «' + t.name + '» добавлены в черновик — нажмите «Опубликовать».';
+          back.remove();
+          render();
+        });
+        grid.appendChild(t2);
+      });
+      wireTiles();
+    }
+    function wireTiles() {
+      grid.querySelectorAll('iframe').forEach(function (f) {
+        f.addEventListener('load', function () {
+          var d = f.contentDocument;
+          if (d) d.body.style.pointerEvents = 'none';
+        });
+      });
+    }
+    back.querySelectorAll('[data-tab]').forEach(function (b) {
+      b.addEventListener('click', function () {
+        back.querySelectorAll('[data-tab]').forEach(function (x) { x.className = (x === b) ? 'btn' : 'btn btn2'; });
+        if (b.getAttribute('data-tab') === 'blocks') fillBlocks(); else fillTmpls();
+      });
+    });
+    fillBlocks();
+    back.querySelector('#pick-close').addEventListener('click', function () { back.remove(); });
+    back.addEventListener('click', function (e) { if (e.target === back) back.remove(); });
+  }
+
+  function insertDraftBlock(typeId, html, alt) {
+    var page = state.page;
+    var ovr = jget('ovr', {}), draft = jget('draft', {});
+    var merged = Object.assign({}, ovr[page] || {}, draft[page] || {});
+    var ts = Date.now();
+    var id = 'block-' + ts;
+    while (merged[id]) { id = 'block-' + (ts++) + '-1'; }
+    draft[page] = draft[page] || {};
+    draft[page][id] = kbgPrefix(alt ? 'gray' : 'white') + html;
+    jset('draft', draft);
+    state.msg = 'Блок добавлен в черновик. Отредактируйте его ниже и нажмите «Опубликовать».';
+    render();
+  }
+
+  function bindNew() {
+    var btn = document.getElementById('np-btn');
+    if (!btn) return;
+    var grid = document.getElementById('tpl-grid');
+    if (grid) {
+      grid.querySelectorAll('.ptile').forEach(function (x) {
+        x.addEventListener('click', function () {
+          document.getElementById('np-tpl').value = x.getAttribute('data-tpl') || '';
+          grid.querySelectorAll('.ptile').forEach(function (y) { y.style.outline = (y === x) ? '3px solid var(--acc)' : ''; });
+        });
+      });
+      grid.querySelectorAll('[data-see]').forEach(function (b) {
+        b.addEventListener('click', function (e) { e.stopPropagation(); openTplPreview(b.getAttribute('data-see')); });
+      });
+      grid.querySelectorAll('[data-use]').forEach(function (b) {
+        b.addEventListener('click', function (e) {
+          e.stopPropagation();
+          document.getElementById('np-tpl').value = b.getAttribute('data-use');
+          grid.querySelectorAll('.ptile').forEach(function (y) { y.style.outline = (y.getAttribute('data-tpl') === b.getAttribute('data-use')) ? '3px solid var(--acc)' : ''; });
+        });
+      });
+      grid.querySelectorAll('.tpl-prev').forEach(function (f) {
+        f.addEventListener('load', function () { try { var d = f.contentDocument; if (d && d.body) { d.body.style.pointerEvents = 'none'; } } catch (e) {} });
+      });
+    }
+    btn.addEventListener('click', function () {
+      var title = (document.getElementById('np-title').value || '').trim();
+      var slug = (document.getElementById('np-slug').value || '').trim().toLowerCase();
+      var tplId = document.getElementById('np-tpl').value || '';
+      if (!title) { alert('Введите заголовок страницы'); return; }
+      if (!/^[a-z0-9][a-z0-9-]{1,49}$/.test(slug)) { alert('Адрес: только латинские буквы, цифры и дефис'); return; }
+      var virt = jget('virtual', {});
+      if (virt[slug]) { alert('Страница с таким адресом уже есть'); return; }
+      var tpl = TEMPLATES.find(function (x) { return x.id === tplId; });
+      if (tpl) {
+        var ts = Date.now();
+        virt[slug] = { title: title, lead: tpl.lead, sections: tpl.sections.map(function (s, i) {
+          return { id: 'sec-' + ts + '-' + i, kbg: s.kbg, html: s.html };
+        }) };
+      } else {
+        virt[slug] = { title: title, lead: '', sections: [{ id: 'sec-' + Date.now(), kbg: 'white', html: '<p>Текст страницы…</p>' }] };
+      }
+      if (jset('virtual', virt)) {
+        state.view = 'panel'; state.msg = 'Страница создана по шаблону «' + (tpl ? tpl.name : 'Без шаблона') + '». Откройте её с диска — уже в меню.';
+        render();
+      }
+    });
+  }
+
+  render();
+})();
+</script>
+</body>
+</html>
