@@ -98,6 +98,7 @@
     jset('reg', reg);
 
     var g = jget('global', {});
+    console.log('KDBG init PAGE=' + PAGE + ' protocol=' + location.protocol + ' ovr=' + JSON.stringify(Object.keys(ovr)));
     document.querySelectorAll('[data-k]').forEach(function (el) {
       var id = el.getAttribute('data-k');
       if (el.hasAttribute('data-global')) {
