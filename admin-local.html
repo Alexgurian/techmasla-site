@@ -68,7 +68,8 @@ input[type=text],input[type=password]{width:100%;padding:11px;border:1px solid v
 (function () {
   'use strict';
   var KHASH = 'df2b5bf06672798a084ff726ca513d88cad081536bc5bf6d0d83b44a586dde75';
-  if (location.protocol !== 'file:') {
+  var ghMode = location.hostname.indexOf('github.io') !== -1;
+  if (location.protocol !== 'file:' && !ghMode) {
     document.getElementById('app').innerHTML = '<div class="wrap"><div class="card"><h2>Это локальная версия редактора</h2><p>Она работает, когда сайт открыт с диска. На сервере правки делаются через основной редактор: <a href="jwd3jjzdzq.php">jwd3jjzdzq.php</a></p></div></div>';
     return;
   }
@@ -308,7 +309,7 @@ input[type=text],input[type=password]{width:100%;padding:11px;border:1px solid v
     var app = document.getElementById('app');
     frames = {};
     if (sessionStorage.getItem('kAuth') !== '1') { app.innerHTML = loginHtml(); bindLogin(); return; }
-    var h = '<div class="top"><b>Редактор сайта</b> <span class="tag">локальный режим</span><span style="flex:1"></span>' +
+    var h = '<div class="top"><b>Редактор сайта</b> <span class="tag">' + (ghMode ? 'GitHub Pages' : 'локальный режим') + '</span><span style="flex:1"></span>' +
       '<a href="#" id="nav-panel">Все страницы</a><a href="#" id="nav-new">+ Новая страница</a><a href="#" id="nav-contacts">Контакты</a><a href="#" id="nav-reset">Сбросить правки</a><a href="#" id="nav-exit">Выйти</a></div>';
     h += '<div class="wrap">' + (state.msg ? '<div class="msg">' + esc(state.msg) + '</div>' : '');
     if (state.view === 'panel') h += panelHtml();
@@ -373,7 +374,7 @@ input[type=text],input[type=password]{width:100%;padding:11px;border:1px solid v
     }).join('');
     return '<div class="card"><h2>Страницы сайта</h2><p class="hint">Стрелками задайте порядок страниц в меню.</p>' +
       '<table><tr><th>Страница</th><th></th></tr>' + rows + '</table>' +
-      '<p class="hint">Локальный режим: изменения видны только в этом браузере и подставляются при открытии страниц с диска. «Открыть» запускает страницу в новой вкладке.</p></div>' +
+      '<p class="hint">' + (ghMode ? 'GitHub Pages: изменения видны только в этом браузере. Для постоянного сайта загрузите файлы на Timeweb и правьте через основной редактор.' : 'Локальный режим: изменения видны только в этом браузере и подставляются при открытии страниц с диска.') + '</p></div>' +
       (arch.length ? '<div class="card"><h2>Архив</h2><table><tr><th>Страница</th><th></th></tr>' + archRows + '</table>' +
       '<p class="hint">Страницы в архиве скрыты со всего сайта и недоступны посетителям. Можно восстановить или удалить навсегда.</p></div>' : '');
   }
