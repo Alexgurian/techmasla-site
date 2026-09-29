@@ -17,6 +17,7 @@
 
 html {
   scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
 }
 
 html {
@@ -1295,4 +1296,146 @@ button:focus-visible {
 
 .section-dark .khero {
   padding: 10px 0;
+}
+
+/* ==== Мобильное бургер-меню ==== */
+.mburger {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  width: 46px;
+  height: 46px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  cursor: pointer;
+  padding: 0;
+  flex: none;
+}
+
+.mburger span {
+  display: block;
+  width: 20px;
+  height: 2px;
+  background: var(--navy);
+  border-radius: 2px;
+  transition: transform 0.2s, opacity 0.2s;
+}
+
+.mnav-open .mburger span:nth-child(1) {
+  transform: translateY(7px) rotate(45deg);
+}
+
+.mnav-open .mburger span:nth-child(2) {
+  opacity: 0;
+}
+
+.mnav-open .mburger span:nth-child(3) {
+  transform: translateY(-7px) rotate(-45deg);
+}
+
+@media (max-width: 720px) {
+  .mburger {
+    display: flex;
+  }
+
+  .card,
+  .step,
+  .stat,
+  .blk {
+    box-shadow: none;
+  }
+
+  .card:hover {
+    transform: none;
+    box-shadow: 0 6px 18px rgba(18, 40, 60, 0.08);
+  }
+
+  .header-in {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+  }
+
+  .brand-name {
+    font-size: 11px;
+  }
+
+  .site-nav {
+    flex: none;
+  }
+
+  .site-nav ul {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    flex-direction: column;
+    gap: 0;
+    padding: 6px 12px 12px;
+    background: #fff;
+    border-bottom: 1px solid var(--line);
+    box-shadow: 0 14px 28px rgba(18, 40, 60, 0.14);
+    z-index: 90;
+  }
+
+  .mnav-open .site-nav ul {
+    display: flex;
+  }
+
+  .site-nav a {
+    padding: 13px 10px;
+    font-size: 15px;
+    border-radius: 8px;
+  }
+
+  .site-nav li + li a {
+    border-top: 1px solid #eef2f6;
+  }
+
+  .hero {
+    padding: 44px 0 52px;
+  }
+
+  .hero h1 {
+    font-size: 26px;
+  }
+
+  .hero-lead,
+  .page-hero .lead {
+    font-size: 15px;
+  }
+
+  .btn {
+    padding: 12px 18px;
+    font-size: 14.5px;
+  }
+
+  .section {
+    padding: 40px 0;
+  }
+
+  .cta-box {
+    padding: 20px;
+  }
+
+  .footer-grid {
+    gap: 24px;
+  }
+}
+
+@media (max-width: 400px) {
+  .brand-name {
+    font-size: 10px;
+  }
+
+  .hero h1 {
+    font-size: 23px;
+  }
 }
