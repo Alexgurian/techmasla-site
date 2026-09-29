@@ -13,7 +13,7 @@ function k_h($s) {
 }
 
 function k_pages_list($root, $admin) {
-    $sys = [$admin, 'admin-local.html', 'page.html'];
+    $sys = [$admin, 'admin-local.html', 'page.html', 'mobile.html'];
     $out = [];
     foreach (glob($root . '/*.html') as $f) {
         $b = basename($f);
@@ -238,7 +238,7 @@ function k_new_page($root, $tpl, $slug, $title, $inner, $admin, $site, $tplId = 
 
 function k_del_page($root, $slug, $admin) {
     if (!preg_match('/^[a-z0-9][a-z0-9-]{1,49}\.html$/', $slug)) return [false, 'Некорректное имя страницы'];
-    if ($slug === 'index.html' || $slug === '404.html' || $slug === 'admin-local.html' || $slug === 'page.html' || $slug === $admin) return [false, 'Эту страницу удалить нельзя'];
+    if ($slug === 'index.html' || $slug === '404.html' || $slug === 'admin-local.html' || $slug === 'page.html' || $slug === 'mobile.html' || $slug === $admin) return [false, 'Эту страницу удалить нельзя'];
     $file = $root . '/' . $slug;
     if (!is_file($file)) return [false, 'Страница не найдена'];
     k_backup($file);

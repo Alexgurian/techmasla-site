@@ -461,7 +461,7 @@ if ($view === 'page') {
 <h2>Страницы сайта</h2>
 <table>
 <tr><th>Страница</th><th>Блоков</th><th></th></tr>
-<?php foreach ($list as $f) { if ($f === '404.html') continue; $nb = count(k_blocks(__DIR__ . '/' . $f)); ?>
+<?php foreach ($list as $f) { if ($f === '404.html' || $f === 'mobile.html') continue; $nb = count(k_blocks(__DIR__ . '/' . $f)); ?>
 <tr>
 <td><?php echo k_h($f); ?></td>
 <td><?php echo $nb; ?></td>
